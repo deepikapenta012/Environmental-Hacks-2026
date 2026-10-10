@@ -1,0 +1,65 @@
+[
+  {
+    "id": "fac_cpcb_wb_7632",
+    "name": "WB E-Waste Control Management Pvt. Ltd.",
+    "registration_number": "7632",
+    "address": "Maheshrekha, Kulgachia, Howrah, West Bengal",
+    "authorization_status": "AUTHORIZED",
+    "authorization_valid_through": "2028-01-31",
+    "permitted_waste_categories": [
+      "WEEE Cat. 1 — Large Household Appliances",
+      "WEEE Cat. 2 — Small Household Appliances",
+      "WEEE Cat. 3 — IT Equipment (Large)",
+      "WEEE Cat. 4 — Consumer Equipment",
+      "WEEE Cat. 5 — Lighting Equipment",
+      "WEEE Cat. 6 — IT and Telecommunications",
+      "WEEE Cat. 7 — Toys, Leisure & Sports",
+      "WEEE Cat. 8 — Medical Devices",
+      "WEEE Cat. 9 — Monitoring Equipment",
+      "WEEE Cat. 10 — Automatic Dispensers",
+      "WEEE Cat. 11 — Photovoltaic Panels"
+    ]
+  },
+  {
+    "id": "fac_cpcb_wb_5736",
+    "name": "J. S. Pigments Pvt. Ltd.",
+    "registration_number": "5736",
+    "address": "Jarura, Polba, Hooghly, West Bengal",
+    "authorization_status": "AUTHORIZED",
+    "authorization_valid_through": "2028-04-30",
+    "permitted_waste_categories": [
+      "WEEE Cat. 1 — Large Household Appliances",
+      "WEEE Cat. 2 — Small Household Appliances",
+      "WEEE Cat. 3 — IT Equipment (Large)",
+      "WEEE Cat. 4 — Consumer Equipment",
+      "WEEE Cat. 5 — Lighting Equipment",
+      "WEEE Cat. 6 — IT and Telecommunications",
+      "WEEE Cat. 7 — Toys, Leisure & Sports",
+      "WEEE Cat. 8 — Medical Devices",
+      "WEEE Cat. 9 — Monitoring Equipment",
+      "WEEE Cat. 10 — Automatic Dispensers",
+      "WEEE Cat. 11 — Photovoltaic Panels"
+    ]
+  },
+  {
+    "id": "fac_cpcb_wb_258",
+    "name": "Hindusthan Recycling",
+    "registration_number": "258",
+    "address": "Madhuban, Purulia, West Bengal",
+    "authorization_status": "AUTHORIZED",
+    "authorization_valid_through": "2027-05-31",
+    "permitted_waste_categories": [
+      "WEEE Cat. 1 — Large Household Appliances",
+      "WEEE Cat. 2 — Small Household Appliances",
+      "WEEE Cat. 3 — IT Equipment (Large)",
+      "WEEE Cat. 4 — Consumer Equipment",
+      "WEEE Cat. 5 — Lighting Equipment",
+      "WEEE Cat. 6 — IT and Telecommunications",
+      "WEEE Cat. 7 — Toys, Leisure & Sports",
+      "WEEE Cat. 8 — Medical Devices",
+      "WEEE Cat. 9 — Monitoring Equipment",
+      "WEEE Cat. 10 — Automatic Dispensers",
+      "WEEE Cat. 11 — Photovoltaic Panels"
+    ]
+  }
+]

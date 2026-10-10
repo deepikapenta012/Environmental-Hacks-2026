@@ -1,0 +1,15 @@
+user_id,full_name,email,role,organisation_id,facility_id,account_status,password_hash_placeholder
+USR-ORG-001,Aarav Shah,aarav.shah@deccan-office.example,ORG_ADMIN,ORG-PRD-001,,ACTIVE,SIM-HASH-ORG-001
+USR-ORG-002,Mira Nair,mira.nair@bluepeak-retail.example,ORG_ADMIN,ORG-PRD-002,,ACTIVE,SIM-HASH-ORG-002
+USR-ORG-003,Rohan Iyer,rohan.iyer@southgrid-it.example,ORG_ADMIN,ORG-PRD-003,,ACTIVE,SIM-HASH-ORG-003
+USR-ORG-004,Ananya Rao,ananya.rao@metroline-electronics.example,ORG_ADMIN,ORG-PRD-004,,ACTIVE,SIM-HASH-ORG-004
+USR-ORG-005,Vikram Reddy,vikram.reddy@kaveri-devices.example,ORG_ADMIN,ORG-PRD-005,,ACTIVE,SIM-HASH-ORG-005
+USR-REC-001,Kiran Varma,kiran.varma@greenloop.example,RECYCLER_EMPLOYEE,,FAC-REC-001,ACTIVE,SIM-HASH-REC-001
+USR-REC-002,Neha Kulkarni,neha.kulkarni@renew-circuit.example,RECYCLER_EMPLOYEE,,FAC-REC-002,ACTIVE,SIM-HASH-REC-002
+USR-REC-003,Sanjay Krishnan,sanjay.krishnan@southarc.example,RECYCLER_EMPLOYEE,,FAC-REC-003,ACTIVE,SIM-HASH-REC-003
+USR-REC-004,Divya Menon,divya.menon@circulartech.example,RECYCLER_EMPLOYEE,,FAC-REC-004,ACTIVE,SIM-HASH-REC-004
+USR-REC-005,Pranav Rao,pranav.rao@deccan-ewaste.example,RECYCLER_EMPLOYEE,,FAC-REC-005,ACTIVE,SIM-HASH-REC-005
+USR-REC-006,Ishita Das,ishita.das@coastal-recovery.example,RECYCLER_EMPLOYEE,,FAC-REC-006,ACTIVE,SIM-HASH-REC-006
+USR-GOV-001,Aditi Mehta,aditi.mehta@gov-review.example,GOVERNMENT_OFFICER,,,ACTIVE,SIM-HASH-GOV-001
+USR-GOV-002,Suresh Rao,suresh.rao@gov-review.example,GOVERNMENT_OFFICER,,,ACTIVE,SIM-HASH-GOV-002
+USR-GOV-003,Nisha Iyer,nisha.iyer@gov-review.example,GOVERNMENT_OFFICER,,,ACTIVE,SIM-HASH-GOV-003

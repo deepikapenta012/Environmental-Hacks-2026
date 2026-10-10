@@ -1,0 +1,24 @@
+# Local secrets and generated credential exports
+.env
+.env.*
+!.env.example
+users-credentials*.xlsx
+~$users-credentials*.xlsx
+
+# Local databases, evidence and runtime files
+backend/*.db
+backend/*.sqlite*
+backend/evidence_store/
+backend/uploads/
+backend/.pytest_cache/
+backend/.audit_pytest_tmp/
+backend/tests/.test_scratch/
+**/__pycache__/
+**/*.py[cod]
+**/.coverage
+
+# JavaScript dependencies and generated output
+**/node_modules/
+frontend/dist/
+frontend/.audit-dist/
+**/.vite/

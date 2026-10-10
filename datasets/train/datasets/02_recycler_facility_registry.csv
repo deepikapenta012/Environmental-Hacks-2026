@@ -1,0 +1,9 @@
+facility_id,facility_name,recycler_organisation_id,facility_registration_id,city,state,country,facility_status,authorized_waste_categories,authorization_reference
+FAC-REC-001,GreenLoop E-Cycle Facility,ORG-REC-001,SIM-FAC-REC-001-REG,Hyderabad,Telangana,India,ACTIVE,Mixed E-Waste;IT Equipment;Computer Peripherals,SIM-AUTH-001
+FAC-REC-002,ReNew Circuit Recovery Works,ORG-REC-002,SIM-FAC-REC-002-REG,Pune,Maharashtra,India,ACTIVE,Printed Circuit Boards;Cables and Wires;IT Equipment,SIM-AUTH-002
+FAC-REC-003,SouthArc Resource Recycling,ORG-REC-003,SIM-FAC-REC-003-REG,Chennai,Tamil Nadu,India,ACTIVE,Mixed E-Waste;Small Appliances;Mobile Phones,SIM-AUTH-003
+FAC-REC-004,CircularTech Materials Plant,ORG-REC-004,SIM-FAC-REC-004-REG,Bengaluru,Karnataka,India,ACTIVE,Mixed E-Waste;IT Equipment;Printed Circuit Boards,SIM-AUTH-004
+FAC-REC-005,Deccan E-Waste Processing Centre,ORG-REC-005,SIM-FAC-REC-005-REG,Warangal,Telangana,India,ACTIVE,IT Equipment;Cables and Wires;Computer Peripherals,SIM-AUTH-005
+FAC-REC-006,Coastal Recovery and Reuse Unit,ORG-REC-006,SIM-FAC-REC-006-REG,Visakhapatnam,Andhra Pradesh,India,ACTIVE,Mixed E-Waste;Mobile Phones;Small Appliances,SIM-AUTH-006
+FAC-REC-007,Western Materials Reclaim Facility,ORG-REC-007,SIM-FAC-REC-007-REG,Nashik,Maharashtra,India,ACTIVE,Printed Circuit Boards;IT Equipment;Cables and Wires,SIM-AUTH-007
+FAC-REC-008,Kaveri Electronics Recyclers,ORG-REC-008,SIM-FAC-REC-008-REG,Vijayawada,Andhra Pradesh,India,ACTIVE,Mixed E-Waste;Computer Peripherals;Small Appliances,SIM-AUTH-008

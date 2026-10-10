@@ -1,0 +1,185 @@
+audit_log_id,claim_id,officer_user_id,action_type,action_timestamp,action_summary,related_flag_id,decision,decision_reason,follow_up_required,synthetic_audit_record
+AUD-000001,CLM-00001,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000002,CLM-00001,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000027,,,YES,YES
+AUD-000009,CLM-00005,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000010,CLM-00006,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000011,CLM-00006,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: POSSIBLE_DUPLICATE_EVIDENCE.,FLAG-000141,,,YES,YES
+AUD-000012,CLM-00007,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000013,CLM-00007,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000011,,,YES,YES
+AUD-000014,CLM-00007,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000028,,,YES,YES
+AUD-000018,CLM-00010,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000021,CLM-00012,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000022,CLM-00012,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000012,,,YES,YES
+AUD-000023,CLM-00012,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: TRANSPORT_ANOMALY_MARKED.,FLAG-000119,,,YES,YES
+AUD-000024,CLM-00013,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000025,CLM-00013,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000013,,,YES,YES
+AUD-000028,CLM-00017,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000029,CLM-00017,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000038,,,YES,YES
+AUD-000030,CLM-00017,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: POSSIBLE_DUPLICATE_EVIDENCE.,FLAG-000155,,,YES,YES
+AUD-000033,CLM-00019,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000034,CLM-00019,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MASS_BALANCE_MISMATCH.,FLAG-000128,,,YES,YES
+AUD-000035,CLM-00019,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MASS_BALANCE_MISMATCH.,FLAG-000129,,,YES,YES
+AUD-000036,CLM-00020,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000037,CLM-00021,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000038,CLM-00022,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000039,CLM-00023,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000040,CLM-00024,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000041,CLM-00024,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: INVALID_TRANSPORT_TIMELINE.,FLAG-000120,,,YES,YES
+AUD-000042,CLM-00025,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000043,CLM-00026,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000044,CLM-00027,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000045,CLM-00027,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000039,,,YES,YES
+AUD-000046,CLM-00027,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000040,,,YES,YES
+AUD-000047,CLM-00031,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000048,CLM-00031,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: POSSIBLE_DUPLICATE_EVIDENCE.,FLAG-000151,,,YES,YES
+AUD-000049,CLM-00032,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000052,CLM-00035,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000053,CLM-00036,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000054,CLM-00037,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000055,CLM-00039,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000056,CLM-00040,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000057,CLM-00040,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000014,,,YES,YES
+AUD-000058,CLM-00041,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000059,CLM-00041,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000041,,,YES,YES
+AUD-000060,CLM-00041,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000089,,,YES,YES
+AUD-000061,CLM-00044,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000062,CLM-00044,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: RECEIVED_WEIGHT_MISMATCH.,FLAG-000105,,,YES,YES
+AUD-000063,CLM-00044,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MASS_BALANCE_MISMATCH.,FLAG-000131,,,YES,YES
+AUD-000064,CLM-00045,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000065,CLM-00047,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000066,CLM-00047,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000003,,,YES,YES
+AUD-000067,CLM-00047,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000043,,,YES,YES
+AUD-000068,CLM-00048,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000069,CLM-00048,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: TRANSPORT_ANOMALY_MARKED.,FLAG-000121,,,YES,YES
+AUD-000070,CLM-00049,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000071,CLM-00049,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: RECOVERED_WEIGHT_EXCEEDS_PROCESSED.,FLAG-000126,,,YES,YES
+AUD-000072,CLM-00049,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: MASS_BALANCE_MISMATCH.,FLAG-000133,,,YES,YES
+AUD-000073,CLM-00050,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000074,CLM-00051,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000075,CLM-00053,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000078,CLM-00056,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000079,CLM-00056,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000031,,,YES,YES
+AUD-000080,CLM-00056,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: POSSIBLE_DUPLICATE_EVIDENCE.,FLAG-000152,,,YES,YES
+AUD-000081,CLM-00057,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000082,CLM-00059,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000084,CLM-00062,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000085,CLM-00062,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000066,,,YES,YES
+AUD-000086,CLM-00063,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000087,CLM-00063,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000004,,,YES,YES
+AUD-000088,CLM-00063,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000017,,,YES,YES
+AUD-000089,CLM-00065,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000090,CLM-00067,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000091,CLM-00067,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000068,,,YES,YES
+AUD-000092,CLM-00067,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: POSSIBLE_DUPLICATE_EVIDENCE.,FLAG-000154,,,YES,YES
+AUD-000093,CLM-00068,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000094,CLM-00068,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000005,,,YES,YES
+AUD-000095,CLM-00068,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: RECEIVED_WEIGHT_MISMATCH.,FLAG-000108,,,YES,YES
+AUD-000096,CLM-00069,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000101,CLM-00072,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000102,CLM-00072,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000032,,,YES,YES
+AUD-000103,CLM-00072,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: RECEIVED_WEIGHT_MISMATCH.,FLAG-000109,,,YES,YES
+AUD-000104,CLM-00073,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000105,CLM-00073,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000046,,,YES,YES
+AUD-000106,CLM-00073,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000092,,,YES,YES
+AUD-000107,CLM-00074,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000108,CLM-00074,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000047,,,YES,YES
+AUD-000109,CLM-00077,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000110,CLM-00077,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000093,,,YES,YES
+AUD-000111,CLM-00077,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: RECEIVED_WEIGHT_MISMATCH.,FLAG-000110,,,YES,YES
+AUD-000112,CLM-00078,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000113,CLM-00078,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: RECEIVED_WEIGHT_MISMATCH.,FLAG-000111,,,YES,YES
+AUD-000114,CLM-00078,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: POSSIBLE_DUPLICATE_EVIDENCE.,FLAG-000147,,,YES,YES
+AUD-000116,CLM-00080,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000117,CLM-00080,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000018,,,YES,YES
+AUD-000118,CLM-00081,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000119,CLM-00081,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000048,,,YES,YES
+AUD-000120,CLM-00083,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000121,CLM-00083,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000033,,,YES,YES
+AUD-000122,CLM-00086,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000123,CLM-00087,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000124,CLM-00088,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000125,CLM-00088,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000019,,,YES,YES
+AUD-000126,CLM-00088,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: POSSIBLE_DUPLICATE_EVIDENCE.,FLAG-000148,,,YES,YES
+AUD-000127,CLM-00089,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000128,CLM-00090,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000129,CLM-00090,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: TRANSPORT_ANOMALY_MARKED.,FLAG-000123,,,YES,YES
+AUD-000131,CLM-00092,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000132,CLM-00092,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000020,,,YES,YES
+AUD-000133,CLM-00092,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: RECOVERED_WEIGHT_EXCEEDS_PROCESSED.,FLAG-000127,,,YES,YES
+AUD-000134,CLM-00093,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000135,CLM-00093,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000050,,,YES,YES
+AUD-000136,CLM-00093,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000070,,,YES,YES
+AUD-000137,CLM-00094,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000138,CLM-00094,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000071,,,YES,YES
+AUD-000139,CLM-00094,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: DISPOSAL_EVIDENCE_PENDING.,FLAG-000137,,,YES,YES
+AUD-000140,CLM-00095,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000141,CLM-00096,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000142,CLM-00097,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000143,CLM-00097,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000021,,,YES,YES
+AUD-000144,CLM-00097,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000072,,,YES,YES
+AUD-000146,CLM-00099,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000147,CLM-00099,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000073,,,YES,YES
+AUD-000148,CLM-00100,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000150,CLM-00103,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000151,CLM-00103,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000007,,,YES,YES
+AUD-000152,CLM-00104,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000153,CLM-00105,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000154,CLM-00106,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000155,CLM-00106,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000094,,,YES,YES
+AUD-000156,CLM-00107,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000157,CLM-00107,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000051,,,YES,YES
+AUD-000160,CLM-00109,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000161,CLM-00109,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000074,,,YES,YES
+AUD-000162,CLM-00109,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: RECEIVED_WEIGHT_MISMATCH.,FLAG-000113,,,YES,YES
+AUD-000163,CLM-00110,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000164,CLM-00112,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000165,CLM-00113,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000166,CLM-00113,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000008,,,YES,YES
+AUD-000167,CLM-00114,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000168,CLM-00114,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000095,,,YES,YES
+AUD-000169,CLM-00116,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000170,CLM-00116,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000034,,,YES,YES
+AUD-000171,CLM-00116,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: MASS_BALANCE_MISMATCH.,FLAG-000138,,,YES,YES
+AUD-000172,CLM-00118,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000173,CLM-00119,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000174,CLM-00119,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: POSSIBLE_DUPLICATE_EVIDENCE.,FLAG-000142,,,YES,YES
+AUD-000175,CLM-00120,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000176,CLM-00120,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000023,,,YES,YES
+AUD-000177,CLM-00120,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: INVALID_TRANSPORT_TIMELINE.,FLAG-000124,,,YES,YES
+AUD-000178,CLM-00122,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000181,CLM-00124,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000182,CLM-00125,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000184,CLM-00129,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000185,CLM-00129,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: RECEIVED_WEIGHT_MISMATCH.,FLAG-000115,,,YES,YES
+AUD-000186,CLM-00130,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000188,CLM-00137,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000189,CLM-00137,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000057,,,YES,YES
+AUD-000190,CLM-00137,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000080,,,YES,YES
+AUD-000191,CLM-00140,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000192,CLM-00142,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000193,CLM-00142,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000098,,,YES,YES
+AUD-000194,CLM-00142,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: RECEIVED_WEIGHT_MISMATCH.,FLAG-000117,,,YES,YES
+AUD-000195,CLM-00144,USR-GOV-003,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000196,CLM-00144,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000025,,,YES,YES
+AUD-000197,CLM-00144,USR-GOV-003,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000082,,,YES,YES
+AUD-000198,CLM-00145,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000199,CLM-00146,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000200,CLM-00146,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000026,,,YES,YES
+AUD-000201,CLM-00146,USR-GOV-001,FLAG_INVESTIGATED,,Review initiated for flag type: RECEIVED_WEIGHT_MISMATCH.,FLAG-000118,,,YES,YES
+AUD-000202,CLM-00147,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000203,CLM-00148,USR-GOV-002,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000204,CLM-00148,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000058,,,YES,YES
+AUD-000205,CLM-00148,USR-GOV-002,FLAG_INVESTIGATED,,Review initiated for flag type: MISSING_EVIDENCE.,FLAG-000059,,,YES,YES
+AUD-000206,CLM-00149,USR-GOV-001,CLAIM_ASSIGNED,,Claim assigned for review; timestamp to be populated by the application.,,,,YES,YES
+AUD-000207,CLM-00001,USR-GOV-003,CLAIM_REJECTED,,Synthetic sample decision for workflow/UI testing; not a real regulatory decision.,,REJECTED,Synthetic test decision; replace with an evidence-based reason during real review.,YES,YES
+AUD-000210,CLM-00005,USR-GOV-001,CLAIM_REJECTED,,Synthetic sample decision for workflow/UI testing; not a real regulatory decision.,,REJECTED,Synthetic test decision; replace with an evidence-based reason during real review.,YES,YES
+AUD-000211,CLM-00006,USR-GOV-001,CLAIM_APPROVED,,Synthetic sample decision for workflow/UI testing; not a real regulatory decision.,,APPROVED,Synthetic test decision; replace with an evidence-based reason during real review.,NO,YES
+AUD-000212,CLM-00007,USR-GOV-001,CLAIM_APPROVED,,Synthetic sample decision for workflow/UI testing; not a real regulatory decision.,,APPROVED,Synthetic test decision; replace with an evidence-based reason during real review.,NO,YES
+AUD-000214,CLM-00010,USR-GOV-002,CLAIM_APPROVED,,Synthetic sample decision for workflow/UI testing; not a real regulatory decision.,,APPROVED,Synthetic test decision; replace with an evidence-based reason during real review.,NO,YES
+AUD-000216,CLM-00012,USR-GOV-001,CLAIM_REJECTED,,Synthetic sample decision for workflow/UI testing; not a real regulatory decision.,,REJECTED,Synthetic test decision; replace with an evidence-based reason during real review.,YES,YES
+AUD-000217,CLM-00013,USR-GOV-002,CLAIM_APPROVED,,Synthetic sample decision for workflow/UI testing; not a real regulatory decision.,,APPROVED,Synthetic test decision; replace with an evidence-based reason during real review.,NO,YES
+AUD-000219,CLM-00017,USR-GOV-003,CLAIM_REJECTED,,Synthetic sample decision for workflow/UI testing; not a real regulatory decision.,,REJECTED,Synthetic test decision; replace with an evidence-based reason during real review.,YES,YES
+AUD-000221,CLM-00019,USR-GOV-001,CLAIM_APPROVED,,Synthetic sample decision for workflow/UI testing; not a real regulatory decision.,,APPROVED,Synthetic test decision; replace with an evidence-based reason during real review.,NO,YES
+AUD-000222,CLM-00020,USR-GOV-003,CLAIM_REJECTED,,Synthetic sample decision for workflow/UI testing; not a real regulatory decision.,,REJECTED,Synthetic test decision; replace with an evidence-based reason during real review.,YES,YES
+AUD-000223,CLM-00021,USR-GOV-002,CLAIM_APPROVED,,Synthetic sample decision for workflow/UI testing; not a real regulatory decision.,,APPROVED,Synthetic test decision; replace with an evidence-based reason during real review.,NO,YES
+AUD-000224,CLM-00022,USR-GOV-002,CLAIM_APPROVED,,Synthetic sample decision for workflow/UI testing; not a real regulatory decision.,,APPROVED,Synthetic test decision; replace with an evidence-based reason during real review.,NO,YES

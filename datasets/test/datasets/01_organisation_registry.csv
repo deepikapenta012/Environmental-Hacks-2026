@@ -1,0 +1,13 @@
+organisation_id,organisation_name,registration_id,organisation_type,city,state,country,contact_email,registration_status,declared_waste_categories
+ORG-PRD-001,Deccan Office Systems Pvt Ltd,SIM-PRD-001-REG,PRODUCER,Hyderabad,Telangana,India,compliance@deccan-office.example,ACTIVE,Mixed E-Waste;IT Equipment;Computer Peripherals
+ORG-PRD-002,BluePeak Retail Services,SIM-PRD-002-REG,PRODUCER,Pune,Maharashtra,India,compliance@bluepeak-retail.example,ACTIVE,Small Appliances;Mobile Phones
+ORG-PRD-003,SouthGrid IT Services,SIM-PRD-003-REG,PRODUCER,Chennai,Tamil Nadu,India,compliance@southgrid-it.example,ACTIVE,IT Equipment;Computer Peripherals
+ORG-PRD-004,Metroline Electronics Recovery,SIM-PRD-004-REG,PRODUCER,Bengaluru,Karnataka,India,compliance@metroline-electronics.example,ACTIVE,Mixed E-Waste;Printed Circuit Boards
+ORG-PRD-005,Kaveri Commercial Devices,SIM-PRD-005-REG,PRODUCER,Vijayawada,Andhra Pradesh,India,compliance@kaveri-devices.example,ACTIVE,IT Equipment;Cables and Wires
+ORG-PRD-006,Orbit Campus Technologies,SIM-PRD-006-REG,PRODUCER,Warangal,Telangana,India,compliance@orbit-campus.example,ACTIVE,IT Equipment;Computer Peripherals
+ORG-PRD-007,Western Circuit Assemblies,SIM-PRD-007-REG,PRODUCER,Nashik,Maharashtra,India,compliance@western-circuit.example,ACTIVE,Printed Circuit Boards;Cables and Wires
+ORG-PRD-008,Coastal Telecom Assets,SIM-PRD-008-REG,PRODUCER,Visakhapatnam,Andhra Pradesh,India,compliance@coastal-telecom.example,ACTIVE,Mixed E-Waste;Mobile Phones
+ORG-PRD-009,Cedar Business Machines,SIM-PRD-009-REG,PRODUCER,Coimbatore,Tamil Nadu,India,compliance@cedar-machines.example,ACTIVE,IT Equipment;Computer Peripherals
+ORG-PRD-010,Mysuru Digital Infrastructure,SIM-PRD-010-REG,PRODUCER,Mysuru,Karnataka,India,compliance@mysuru-digital.example,ACTIVE,IT Equipment;Small Appliances
+ORG-PRD-011,Nizamabad Office Networks,SIM-PRD-011-REG,PRODUCER,Nizamabad,Telangana,India,compliance@nizamabad-networks.example,ACTIVE,IT Equipment;Cables and Wires
+ORG-PRD-012,Central Data Equipment Services,SIM-PRD-012-REG,PRODUCER,Nagpur,Maharashtra,India,compliance@central-data.example,ACTIVE,Mixed E-Waste;Printed Circuit Boards
