@@ -27,6 +27,34 @@ export function formatNumber(n: number): string {
   return n.toLocaleString('en-GB');
 }
 
+const AUDIT_FIELD_LABELS: Record<string, string> = {
+  received_weight_kg: 'received weight', declared_weight_kg: 'declared weight',
+  processed_output_kg: 'processed output', residual_waste_kg: 'residual waste',
+  recovered_materials: 'recovered materials', batch_id: 'processing batch',
+  evidence_id: 'document', filename: 'file name', category: 'document type',
+  sha256: 'file fingerprint', status: 'status', reason: 'reason', note: 'note',
+  official_name: 'official name', received_at: 'received date',
+  processing_completed_at: 'processing completion date',
+};
+
+function humanAuditValue(value: unknown): string {
+  if (value === null || value === undefined || value === '') return 'not recorded';
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+  if (typeof value === 'number') return Number.isInteger(value) ? value.toLocaleString('en-GB') : value.toLocaleString('en-GB', { maximumFractionDigits: 3 });
+  if (typeof value === 'string') return value.replace(/_/g, ' ').replace(/\b[A-Z]{2,}\b/g, word => word[0] + word.slice(1).toLowerCase());
+  if (Array.isArray(value)) return value.length ? value.map(humanAuditValue).join('; ') : 'none';
+  if (typeof value === 'object') return Object.entries(value as Record<string, unknown>)
+    .filter(([, item]) => item !== undefined && item !== null && typeof item !== 'object')
+    .map(([key, item]) => `${AUDIT_FIELD_LABELS[key] ?? key.replace(/_/g, ' ')}: ${humanAuditValue(item)}`).join(', ') || 'details recorded';
+  return String(value);
+}
+
+export function humanAuditChanges(values?: Record<string, unknown> | null): string[] {
+  if (!values) return [];
+  return Object.entries(values).filter(([key]) => !['previous_hash', 'event_hash', 'request_correlation_id'].includes(key))
+    .map(([key, value]) => `${AUDIT_FIELD_LABELS[key] ?? key.replace(/_/g, ' ')}: ${humanAuditValue(value)}`);
+}
+
 export function auditEventDetails(event: ClaimAuditEvent): string {
   const values = typeof event.values === 'object' && event.values !== null
     ? event.values as Record<string, unknown>

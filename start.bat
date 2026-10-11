@@ -5,7 +5,11 @@ echo Starting E-Waste ChainGuard...
 echo.
 
 :: Start backend in a new window
-start "ChainGuard Backend" cmd /k "cd /d %~dp0backend && venv\Scripts\uvicorn.exe app.main:app --reload --port 8000"
+if exist "%~dp0backend\.venv\Scripts\uvicorn.exe" (
+  start "ChainGuard Backend" cmd /k "cd /d %~dp0backend && .venv\Scripts\uvicorn.exe app.main:app --reload --port 8000"
+) else (
+  start "ChainGuard Backend" cmd /k "cd /d %~dp0backend && venv\Scripts\uvicorn.exe app.main:app --reload --port 8000"
+)
 
 :: Give the backend 2 seconds to bind before opening the browser hint
 timeout /t 2 /nobreak > nul

@@ -3,7 +3,7 @@ import { AlertTriangle, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { createMassBalanceAdjustment, fetchClaim, reviewMassBalanceAdjustment } from '@/lib/api';
-import { formatDate, formatWeight } from '@/lib/utils';
+import { formatDate, formatWeight, humanAuditChanges } from '@/lib/utils';
 import type { AuditEventRecord, RecyclingClaim } from '@/types';
 
 export function AuditTimeline({ events = [], chainValid }: { events?: AuditEventRecord[]; chainValid?: boolean }) {
@@ -20,10 +20,10 @@ export function AuditTimeline({ events = [], chainValid }: { events?: AuditEvent
         <p className="font-semibold text-slate-800">#{event.sequence_no} {event.action_type.replace(/_/g, ' ')}
           <span className="font-normal"> · {event.actor_role ?? 'Legacy role unavailable'} · {event.actor_display_name ?? 'Actor unavailable'} · {event.occurred_at ? formatDate(event.occurred_at) : 'Legacy timestamp unavailable'}</span>
         </p>
-        {event.previous_values && <p className="mt-1"><strong>Previous:</strong> {JSON.stringify(event.previous_values)}</p>}
-        {event.new_values && <p className="mt-1"><strong>Changed to:</strong> {JSON.stringify(event.new_values)}</p>}
+        {!!humanAuditChanges(event.previous_values).length && <div className="mt-1"><strong>Before:</strong><ul className="ml-4 list-disc">{humanAuditChanges(event.previous_values).map((change, index) => <li key={index}>{change}</li>)}</ul></div>}
+        {!!humanAuditChanges(event.new_values).length && <div className="mt-1"><strong>Recorded details:</strong><ul className="ml-4 list-disc">{humanAuditChanges(event.new_values).map((change, index) => <li key={index}>{change}</li>)}</ul></div>}
         {event.reason && <p className="mt-1"><strong>Reason:</strong> {event.reason}</p>}
-        {event.legacy_event && <p className="mt-1 text-amber-700">Imported legacy entry; source payload retained.</p>}
+        {event.legacy_event && <div className="mt-1 text-amber-700"><strong>Imported record:</strong> {humanAuditChanges(event.legacy_payload).join('; ') || 'Older audit details were retained for the record.'}</div>}
       </li>)}
     </ol>}
   </Card>;

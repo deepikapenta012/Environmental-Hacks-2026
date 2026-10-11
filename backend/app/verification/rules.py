@@ -144,6 +144,7 @@ def check_mass_balance(
     if (
         processed_output_kg is not None
         and processed_output_kg > 0
+        and recovered_materials
         and recovered_total is not None
         and residual_waste_kg is not None
     ):
@@ -379,6 +380,8 @@ def check_duplicate_evidence(claim_id: str, evidence_records: list[dict]) -> lis
     """Flag exact SHA-256 matches involving one or more files on this claim."""
     by_hash: dict[str, list[dict]] = {}
     for evidence in evidence_records:
+        if evidence.get("status", "ACTIVE") not in {"ACTIVE", "PENDING_REVIEW"}:
+            continue
         digest = evidence.get("sha256")
         if digest:
             by_hash.setdefault(digest, []).append(evidence)
@@ -789,10 +792,33 @@ def check_document_consistency(
                 left_qty, right_qty = float(left_qty), float(right_qty)
                 quantity_difference = left_qty - right_qty
                 quantity_variance = abs(quantity_difference) / max(left_qty, right_qty, 1e-9) * 100
-                if quantity_variance > quantity_tolerance_pct:
+                def matches_claim_stage(record: dict, quantity: float) -> bool:
+                    expected_quantity = (
+                        recycler_quantity
+                        if record.get("source") == "RECYCLER" and recycler_quantity > 0
+                        else producer_quantity
+                    )
+                    if expected_quantity <= 0:
+                        return True
+                    return abs(quantity - expected_quantity) / expected_quantity * 100 <= quantity_tolerance_pct
+
+                # If either file already conflicts with its own claim-stage
+                # quantity, the pairwise comparison is a second count of that
+                # same discrepancy rather than an independent finding.
+                if (
+                    quantity_variance > quantity_tolerance_pct
+                    and matches_claim_stage(first, left_qty)
+                    and matches_claim_stage(second, right_qty)
+                ):
                     conflicts.append(f"quantity differs ({left_qty:g} kg vs {right_qty:g} kg)")
             left_date, right_date = first_data.get("date"), second_data.get("date")
-            if left_date and right_date:
+            # Collection/dispatch dates and recycler receipt/processing dates
+            # describe different stages and are expected to differ. Compare
+            # dates across documents only when the documents represent the
+            # same evidence category; each file is still checked against its
+            # claim-stage date above.
+            same_evidence_stage = first.get("category") == second.get("category")
+            if left_date and right_date and same_evidence_stage:
                 days = _temporal_distance_days(left_date, right_date)
                 if (
                     days > max(0, date_tolerance_days)

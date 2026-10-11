@@ -64,11 +64,11 @@ class LocalStructuredDocumentExtractor:
         "transporter": r"transporter|carrier", "facility": r"facility",
         "vehicle_registration": r"vehicle\s*(?:registration|reg(?:istration)?\s*no|number)",
         "batch_number": r"(?:processing\s*)?batch\s*(?:id|no\.?|number|ref(?:erence)?)",
-        "quantity": r"(?:declared\s*)?quantity|weight",
+        "quantity": r"(?:(?:declared\s*)?quantity|weight)",
         "net_weight_kg": r"net\s*(?:weight)?", "gross_weight_kg": r"gross\s*(?:weight)?",
-        "tare_weight_kg": r"tare\s*(?:weight)?", "received_quantity_kg": r"received\s*(?:quantity|weight)",
-        "processing_input_kg": r"processing\s*input", "recovered_quantity_kg": r"recovered\s*(?:quantity|weight|total)",
-        "residual_quantity_kg": r"residual\s*(?:waste\s*)?(?:quantity|weight|total)",
+        "tare_weight_kg": r"tare\s*(?:weight)?", "received_quantity_kg": r"received\s*(?:quantity|weight|kg)",
+        "processing_input_kg": r"processing\s*input", "recovered_quantity_kg": r"recovered\s*(?:quantity|weight|total|kg)",
+        "residual_quantity_kg": r"residual\s*(?:waste\s*)?(?:quantity|weight|total|kg)",
         "date": r"(?:collection\s*|issue\s*|receipt\s*|processing\s*)?date",
         "dispatch_date": r"dispatch\s*date", "arrival_date": r"arrival\s*date",
         "material_type": r"material\s*type|material|waste\s*category",
@@ -84,10 +84,7 @@ class LocalStructuredDocumentExtractor:
                 raise ValueError(f"PDF exceeds the {self.MAX_PAGES}-page extraction limit")
             return [page.extract_text() or "" for page in reader.pages]
         except ImportError:
-            # Extraction remains unavailable in minimal local installs, but the
-            # upload itself is still retained and any explicitly supplied data
-            # remains separately labeled as uploader-provided.
-            return []
+            raise ValueError("PDF text extraction is unavailable because pypdf is not installed")
         except ValueError:
             raise
         except Exception as exc:
@@ -171,14 +168,25 @@ class LocalStructuredDocumentExtractor:
             for field, label in self.LABELS.items():
                 if field in parsed:
                     continue
-                match = re.search(rf"(?im)^\s*(?:{label})\s*[:=#-]\s*([^\r\n]+)", page)
+                if field == "quantity":
+                    match = re.search(
+                        rf"(?im)^\s*(?:{label})(?:\s*(?P<label_unit>kg|kgs|kilograms?|tonnes?|tons?))?\s*[:=#-]\s*(?P<value>[^\r\n]+)",
+                        page,
+                    )
+                else:
+                    match = re.search(rf"(?im)^\s*(?:{label})\s*[:=#-]\s*([^\r\n]+)", page)
                 if not match:
                     continue
-                original = match.group(1).strip().rstrip(";,")
+                original = (match.group("value") if field == "quantity" else match.group(1)).strip().rstrip(";,")
                 if field in {"quantity", "net_weight_kg", "gross_weight_kg", "tare_weight_kg",
                              "received_quantity_kg", "processing_input_kg", "recovered_quantity_kg",
                              "residual_quantity_kg"}:
                     number, unit = self._quantity(original)
+                    if field == "quantity" and unit is None:
+                        unit = match.group("label_unit")
+                        unit = "tonnes" if unit and unit.lower().startswith("tonne") else (
+                            "kg" if unit and unit.lower() in {"kg", "kgs", "kilogram", "kilograms"} else unit
+                        )
                     if number is None:
                         continue
                     if field != "quantity" and unit == "tonnes":

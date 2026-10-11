@@ -574,15 +574,21 @@ def _run_verification(claim: Claim, db: Session, actor: User | None = None) -> N
         claim_status=claim.status,
         has_verification_result=claim.verification_result is not None,
     ))
-    hashes = {item.sha256 for item in claim_evidence if item.sha256}
+    hashes = {
+        item.sha256 for item in claim_evidence
+        if item.sha256 and item.status in {"ACTIVE", "PENDING_REVIEW"}
+    }
     if hashes:
-        matching_query = db.query(Evidence).join(Claim, Claim.id == Evidence.claim_id).filter(Evidence.sha256.in_(hashes))
+        matching_query = db.query(Evidence).join(Claim, Claim.id == Evidence.claim_id).filter(
+            Evidence.sha256.in_(hashes), Evidence.status.in_(["ACTIVE", "PENDING_REVIEW"])
+        )
         matching_evidence = (matching_query.filter(_scope_filter(db, actor)).all()
                              if actor else matching_query.filter(Claim.id == claim.id).all())
         flags.extend(check_duplicate_evidence(
             claim.id,
             [
-                {"id": item.id, "claim_id": item.claim_id, "sha256": item.sha256}
+                {"id": item.id, "claim_id": item.claim_id, "sha256": item.sha256,
+                 "status": item.status}
                 for item in matching_evidence
             ],
         ))
@@ -1914,11 +1920,12 @@ def archive_evidence(
     claim = _load_claim(claim_id, db, current_user)
     evidence = (
         db.query(Evidence)
-        .filter(Evidence.id == evidence_id, Evidence.claim_id == claim_id, Evidence.status == "ACTIVE")
+        .filter(Evidence.id == evidence_id, Evidence.claim_id == claim_id,
+                Evidence.status.in_(["ACTIVE", "PENDING_REVIEW"]))
         .first()
     )
     if not evidence:
-        raise HTTPException(status_code=404, detail="Active evidence not found")
+        raise HTTPException(status_code=404, detail="Active or pending evidence not found")
 
     if current_user.role not in {PRODUCER, RECYCLER_EMPLOYEE}:
         raise HTTPException(status_code=403, detail="Cannot archive evidence with this role")
@@ -1936,7 +1943,10 @@ def archive_evidence(
     evidence.status = "ARCHIVED"
     evidence.replacement_reason = reason
     from app.models import EvidenceVersion
-    active_version = db.query(EvidenceVersion).filter_by(evidence_id=evidence.id, status="ACTIVE").first()
+    active_version = db.query(EvidenceVersion).filter(
+        EvidenceVersion.evidence_id == evidence.id,
+        EvidenceVersion.status.in_(["ACTIVE", "PENDING_REVIEW"]),
+    ).first()
     if active_version:
         active_version.status = "ARCHIVED"
 

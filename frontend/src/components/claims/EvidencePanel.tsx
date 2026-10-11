@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AlertTriangle, Archive, CheckCircle2, Clock3, Download, ExternalLink, FileText, History, RefreshCw, ShieldAlert, Upload, XCircle } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -188,6 +188,7 @@ export function EvidencePanel({
 }) {
   const [items, setItems] = useState(evidence);
   const [selected, setSelected] = useState<Partial<Record<Category, File>>>({});
+  const evidenceInputRefs = useRef<Partial<Record<Category, HTMLInputElement | null>>>({});
   const [structuredFiles, setStructuredFiles] = useState<Partial<Record<Category, File>>>({});
   const [linkedTypes, setLinkedTypes] = useState<Partial<Record<Category, string>>>({});
   const [linkedIds, setLinkedIds] = useState<Partial<Record<Category, string>>>({});
@@ -330,9 +331,9 @@ export function EvidencePanel({
     <Card>
       <div className="space-y-4">
         <div>
-          <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">Evidence Checklist</h2>
-          <p className="mt-1 text-xs text-slate-500">Missing evidence is a completeness reminder. It does not by itself indicate fraud or add risk.</p>
-          <p className="mt-1 text-[10px] text-slate-400">Accepted formats: {ACCEPTED_FORMATS}</p>
+          <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">{party === 'RECYCLER' ? 'Claim documents' : 'Evidence Checklist'}</h2>
+          {party !== 'RECYCLER' && <p className="mt-1 text-xs text-slate-500">Missing evidence is a completeness reminder. It does not by itself indicate fraud or add risk.</p>}
+          {party !== 'RECYCLER' && <p className="mt-1 text-[10px] text-slate-400">Accepted formats: {ACCEPTED_FORMATS}</p>}
         </div>
 
         <div className="grid gap-3">
@@ -368,23 +369,25 @@ export function EvidencePanel({
                   : 'No file uploaded; optional.';
 
             return (
-              <section key={category} className="rounded-lg border border-slate-200 p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
+              <details key={category} open={party !== 'RECYCLER'} className="rounded-lg border border-slate-200 p-3">
+                <summary className="flex cursor-pointer list-none flex-wrap items-center justify-between gap-3">
                   <div className="min-w-0">
                     <h3 className="text-sm font-semibold text-slate-800">{card.title}</h3>
-                    <p className="mt-1 text-xs text-slate-500">{card.purpose}</p>
-                    <p className="mt-1 text-[10px] text-slate-400">Responsible: {card.responsible} · {stageLabel}</p>
+                    {party !== 'RECYCLER' && <><p className="mt-1 text-xs text-slate-500">{card.purpose}</p><p className="mt-1 text-[10px] text-slate-400">Responsible: {card.responsible} · {stageLabel}</p></>}
                   </div>
-                  <span className={`rounded-full px-2 py-1 text-[10px] font-semibold ${activeAttached.length ? 'bg-teal-50 text-teal-700' : due && required ? 'bg-amber-50 text-amber-800' : 'bg-slate-100 text-slate-600'}`}>
-                    {activeAttached.length ? `${activeAttached.length} active` : due && required ? 'Missing' : !due ? 'Later stage' : category === 'RECYCLING_CERTIFICATE' ? 'Conditional' : 'Optional'}
-                    {supersededAttached.length > 0 && ` · ${supersededAttached.length} superseded`}
-                    {archivedAttached.length > 0 && ` · ${archivedAttached.length} archived`}
-                  </span>
-                </div>
+                  <div className="ml-auto flex shrink-0 items-center gap-2">
+                    <span className={`rounded-full px-2 py-1 text-[10px] font-semibold ${activeAttached.length ? 'bg-teal-50 text-teal-700' : due && required ? 'bg-amber-50 text-amber-800' : 'bg-slate-100 text-slate-600'}`}>
+                      {activeAttached.length ? `${activeAttached.length} file${activeAttached.length === 1 ? '' : 's'}` : due && required ? 'Missing' : !due ? 'Later stage' : category === 'RECYCLING_CERTIFICATE' ? 'Conditional' : 'Optional'}
+                      {supersededAttached.length > 0 && ` · ${supersededAttached.length} superseded`}
+                      {archivedAttached.length > 0 && ` · ${archivedAttached.length} archived`}
+                    </span>
+                    {party === 'RECYCLER' && ['RECYCLER_RECEIPT', 'PROCESSING_RECOVERY', 'RECYCLING_CERTIFICATE', 'OTHER_SUPPORTING'].includes(category) && <button type="button" disabled={!uploadable} onClick={event => { event.preventDefault(); event.stopPropagation(); const details = event.currentTarget.closest('details'); if (details) details.open = true; evidenceInputRefs.current[category]?.click(); }} className="inline-flex items-center gap-1 rounded-md bg-teal-700 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-slate-300" title={!uploadable ? uploadDisabledReason : `Choose ${card.title}`}><Upload className="h-3.5 w-3.5" aria-hidden="true" /> Upload</button>}
+                  </div>
+                </summary>
 
-                <p className="mt-2 text-[10px] text-slate-500">Supports: {card.checks.join(' · ')}</p>
-                {!activeAttached.length && <p className="mt-2 text-xs text-slate-500">{emptyState}</p>}
-                {!activeAttached.length && <p className="mt-1 text-[10px] text-slate-400">Verification: {due && required ? 'Not run; no file to check' : !due ? 'Waiting for the matching workflow stage' : 'Not applicable unless evidence is provided'}</p>}
+                <div className="mt-3 border-t border-slate-100 pt-3">
+                {party !== 'RECYCLER' && <p className="mt-2 text-[10px] text-slate-500">Supports: {card.checks.join(' · ')}</p>}
+                {!activeAttached.length && party !== 'RECYCLER' && <><p className="mt-2 text-xs text-slate-500">{emptyState}</p><p className="mt-1 text-[10px] text-slate-400">Verification: {due && required ? 'Not run; no file to check' : !due ? 'Waiting for the matching workflow stage' : 'Not applicable unless evidence is provided'}</p></>}
 
                 {attached.map(item => {
                   const verification = STATUS_STYLE[item.verification_status || 'PENDING_HUMAN_REVIEW'];
@@ -429,10 +432,10 @@ export function EvidencePanel({
                           </button>
                         </div>
                       </div>
-                      <p className="mt-1 break-all text-[10px] text-slate-400">
+                      {party !== 'RECYCLER' && <p className="mt-1 break-all text-[10px] text-slate-400">
                         {item.source} · {item.size_bytes.toLocaleString()} bytes · SHA-256 {item.sha256}
                         {item.linked_entity_type && ` · linked: ${item.linked_entity_type}/${item.linked_entity_id}`}
-                      </p>
+                      </p>}
                       {item.replacement_reason && (
                         <p className="mt-1 text-[10px] text-orange-600">
                           {isSuperseded ? 'Superseded' : isArchived ? 'Archived' : 'Replaced'}: {item.replacement_reason}
@@ -443,9 +446,8 @@ export function EvidencePanel({
                           ⏳ This replacement is awaiting government review before it can be accepted.
                         </p>
                       )}
-                      {item.verification_checks?.length > 0 && <ul className="mt-2 list-inside list-disc space-y-0.5 text-[10px] text-slate-600">{item.verification_checks.map((check, index) => <li key={`${item.id}-${index}`}>{check}</li>)}</ul>}
-                      <p className="mt-1 text-[10px] text-slate-600">Extraction: {item.extraction_status || 'PENDING'}{item.extraction_provenance?.method ? ` · ${item.extraction_provenance.method}` : ''}. Authenticity: not verified.</p>
-                      {item.extracted_data && <div className="mt-2 overflow-x-auto"><p className="mb-1 text-[10px] font-semibold text-slate-600">Document fields compared with claim entry · automatic consistency check only</p><table className="w-full text-left text-[10px]"><thead><tr className="text-slate-500"><th className="pr-3 font-medium">Field</th><th className="pr-3 font-medium">Extracted</th><th className="pr-3 font-medium">Entered in claim</th><th className="font-medium">Check</th></tr></thead><tbody>{Object.entries(item.extracted_data).filter(([key]) => key !== '_provenance').map(([key, value]) => { const source = item.extraction_provenance?.field_sources?.[key]; const details = item.extraction_provenance?.field_details?.[key] || {}; const compared = compareExtractedFields(item, claim)?.find(field => field.key === key); const statusStyle = compared?.result === 'MISMATCH' ? 'text-red-700 bg-red-50' : compared?.result === 'MATCH' ? 'text-emerald-700 bg-emerald-50' : 'text-slate-500 bg-slate-100'; const displayEntered = compared?.entered === null || compared?.entered === undefined || compared?.entered === '' ? 'Not entered / not applicable' : `${String(compared.entered)}${['quantity', 'net_weight_kg', 'received_quantity_kg', 'processing_input_kg', 'recovered_quantity_kg', 'residual_quantity_kg'].includes(key) ? ' kg' : ''}`; const displayExtracted = `${String(value)}${key === 'quantity' && item.extracted_data?.quantity_unit ? ` ${item.extracted_data.quantity_unit}` : ['net_weight_kg', 'received_quantity_kg', 'processing_input_kg', 'recovered_quantity_kg', 'residual_quantity_kg'].includes(key) ? ' kg' : ''}`; return <tr key={key} className="border-t border-slate-200"><td className="pr-3 py-1 capitalize">{key.replace(/_/g, ' ')}</td><td className="pr-3 py-1 break-words">{displayExtracted}<span className="block text-slate-400">{source || 'unknown'}{details.page ? ` · page ${details.page}` : ''}{typeof details.confidence === 'number' ? ` · ${Math.round(details.confidence * 100)}% extraction confidence` : ''}</span></td><td className="pr-3 py-1 break-words">{displayEntered}</td><td className="py-1"><span className={`rounded px-1.5 py-0.5 ${statusStyle}`}>{compared?.result === 'MATCH' ? 'Matches' : compared?.result === 'MISMATCH' ? 'Mismatch' : claim ? 'Not comparable' : 'Claim unavailable'}</span></td></tr>; })}</tbody></table><p className="mt-1 text-[9px] text-slate-500">Quantity tolerance is 5%; dates allow a one-day difference. A match does not verify document authenticity.</p></div>}
+                      {party === 'RECYCLER' ? <details className="mt-2 text-[10px] text-slate-500"><summary className="cursor-pointer">Check details</summary><p className="mt-1">Extraction: {item.extraction_status || 'PENDING'}{item.extraction_provenance?.method ? ` · ${item.extraction_provenance.method}` : ''}. Authenticity is not verified.</p>{item.verification_checks?.length > 0 && <ul className="mt-1 list-inside list-disc">{item.verification_checks.map((check, index) => <li key={`${item.id}-${index}`}>{check}</li>)}</ul>}<p className="mt-1 break-all">SHA-256 {item.sha256}{item.linked_entity_type && ` · linked: ${item.linked_entity_type}/${item.linked_entity_id}`}</p></details> : <><p className="mt-1 text-[10px] text-slate-600">Extraction: {item.extraction_status || 'PENDING'}{item.extraction_provenance?.method ? ` · ${item.extraction_provenance.method}` : ''}. Authenticity: not verified.</p>{item.verification_checks?.length > 0 && <ul className="mt-2 list-inside list-disc space-y-0.5 text-[10px] text-slate-600">{item.verification_checks.map((check, index) => <li key={`${item.id}-${index}`}>{check}</li>)}</ul>}</>}
+                      {item.extracted_data && party !== 'RECYCLER' && <div className="mt-2 overflow-x-auto"><p className="mb-1 text-[10px] font-semibold text-slate-600">Document fields compared with claim entry · automatic consistency check only</p><table className="w-full text-left text-[10px]"><thead><tr className="text-slate-500"><th className="pr-3 font-medium">Field</th><th className="pr-3 font-medium">Extracted</th><th className="pr-3 font-medium">Entered in claim</th><th className="font-medium">Check</th></tr></thead><tbody>{Object.entries(item.extracted_data).filter(([key]) => key !== '_provenance').map(([key, value]) => { const source = item.extraction_provenance?.field_sources?.[key]; const details = item.extraction_provenance?.field_details?.[key] || {}; const compared = compareExtractedFields(item, claim)?.find(field => field.key === key); const statusStyle = compared?.result === 'MISMATCH' ? 'text-red-700 bg-red-50' : compared?.result === 'MATCH' ? 'text-emerald-700 bg-emerald-50' : 'text-slate-500 bg-slate-100'; const displayEntered = compared?.entered === null || compared?.entered === undefined || compared?.entered === '' ? 'Not entered / not applicable' : `${String(compared.entered)}${['quantity', 'net_weight_kg', 'received_quantity_kg', 'processing_input_kg', 'recovered_quantity_kg', 'residual_quantity_kg'].includes(key) ? ' kg' : ''}`; const displayExtracted = `${String(value)}${key === 'quantity' && item.extracted_data?.quantity_unit ? ` ${item.extracted_data.quantity_unit}` : ['net_weight_kg', 'received_quantity_kg', 'processing_input_kg', 'recovered_quantity_kg', 'residual_quantity_kg'].includes(key) ? ' kg' : ''}`; return <tr key={key} className="border-t border-slate-200"><td className="pr-3 py-1 capitalize">{key.replace(/_/g, ' ')}</td><td className="pr-3 py-1 break-words">{displayExtracted}<span className="block text-slate-400">{source || 'unknown'}{details.page ? ` · page ${details.page}` : ''}{typeof details.confidence === 'number' ? ` · ${Math.round(details.confidence * 100)}% extraction confidence` : ''}</span></td><td className="pr-3 py-1 break-words">{displayEntered}</td><td className="py-1"><span className={`rounded px-1.5 py-0.5 ${statusStyle}`}>{compared?.result === 'MATCH' ? 'Matches' : compared?.result === 'MISMATCH' ? 'Mismatch' : claim ? 'Not comparable' : 'Claim unavailable'}</span></td></tr>; })}</tbody></table><p className="mt-1 text-[9px] text-slate-500">Quantity tolerance is 5%; dates allow a one-day difference. A match does not verify document authenticity.</p></div>}
 
                       {/* Replace / Archive actions */}
                       {!isSuperseded && !isArchived && party !== 'AUDITOR' && (
@@ -502,21 +504,26 @@ export function EvidencePanel({
 
                 {party !== 'AUDITOR' && !finalDecision && (
                   <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
-                    <label className="space-y-1 text-[10px] font-medium text-slate-500">
-                      {uploadable ? `Upload ${card.title}` : `Upload ${card.title} · unavailable`}
-                      <input disabled={!uploadable} type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" onChange={event => setSelected(current => ({ ...current, [category]: event.target.files?.[0] }))} className="block w-full text-xs text-slate-600 file:mr-2 file:rounded-md file:border-0 file:bg-slate-100 file:px-2 file:py-1.5 file:text-[10px] disabled:opacity-50" />
+                    <label className="space-y-1 text-xs font-semibold text-slate-700 sm:col-span-2">
+                      {uploadable ? 'Add a document' : 'Add a document · unavailable'}
+                      <input ref={element => { evidenceInputRefs.current[category] = element; }} disabled={!uploadable} type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" onChange={event => setSelected(current => ({ ...current, [category]: event.target.files?.[0] }))} className="block w-full rounded-md border border-slate-200 bg-white p-2 text-xs font-normal text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-teal-50 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-teal-800 disabled:opacity-50" />
+                      <span className="block text-[10px] font-normal text-slate-500">{selected[category]?.name || 'PDF or image · up to 10 MB'}</span>
                     </label>
-                    <label className="space-y-1 text-[10px] font-medium text-slate-500">
-                      Optional structured check data (JSON)
-                      <input disabled={!uploadable} type="file" accept=".json,application/json" onChange={event => setStructuredFiles(current => ({ ...current, [category]: event.target.files?.[0] }))} className="block w-full text-xs text-slate-600 file:mr-2 file:rounded-md file:border-0 file:bg-slate-100 file:px-2 file:py-1.5 file:text-[10px] disabled:opacity-50" />
-                    </label>
-                    <label className="space-y-1 text-[10px] font-medium text-slate-500">
-                      Linked record type
-                      <select disabled={!uploadable} value={linkedTypes[category] || 'CLAIM'} onChange={event => setLinkedTypes(current => ({ ...current, [category]: event.target.value }))} className="block w-full rounded border border-slate-200 bg-white px-2 py-1.5 text-xs">
-                        {['CLAIM', 'TRANSPORT_LEG', 'RECEIPT', 'PROCESSING_BATCH', 'RESIDUAL_WASTE'].map(type => <option key={type} value={type}>{type.replace(/_/g, ' ')}</option>)}
-                      </select>
-                    </label>
-                    {['TRANSPORT_LEG', 'PROCESSING_BATCH'].includes(linkedTypes[category] || 'CLAIM') && <label className="space-y-1 text-[10px] font-medium text-slate-500">Linked record ID<input disabled={!uploadable} value={linkedIds[category] || ''} onChange={event => setLinkedIds(current => ({ ...current, [category]: event.target.value }))} placeholder="Operational record ID" className="block w-full rounded border border-slate-200 px-2 py-1.5 text-xs" /></label>}
+                    <details className="text-[10px] text-slate-500 sm:col-span-2">
+                      <summary className="cursor-pointer select-none font-medium">Advanced options</summary>
+                      <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                        <label className="space-y-1">Optional check data (JSON)
+                          <input disabled={!uploadable} type="file" accept=".json,application/json" onChange={event => setStructuredFiles(current => ({ ...current, [category]: event.target.files?.[0] }))} className="block w-full text-xs text-slate-600 file:mr-2 file:rounded-md file:border-0 file:bg-slate-100 file:px-2 file:py-1.5 file:text-[10px] disabled:opacity-50" />
+                          {structuredFiles[category] && <span className="block">{structuredFiles[category]?.name}</span>}
+                        </label>
+                        <label className="space-y-1">Linked record type
+                          <select disabled={!uploadable} value={linkedTypes[category] || 'CLAIM'} onChange={event => setLinkedTypes(current => ({ ...current, [category]: event.target.value }))} className="block w-full rounded border border-slate-200 bg-white px-2 py-1.5 text-xs">
+                            {['CLAIM', 'TRANSPORT_LEG', 'RECEIPT', 'PROCESSING_BATCH', 'RESIDUAL_WASTE'].map(type => <option key={type} value={type}>{type.replace(/_/g, ' ')}</option>)}
+                          </select>
+                        </label>
+                        {['TRANSPORT_LEG', 'PROCESSING_BATCH'].includes(linkedTypes[category] || 'CLAIM') && <label className="space-y-1">Linked record ID<input disabled={!uploadable} value={linkedIds[category] || ''} onChange={event => setLinkedIds(current => ({ ...current, [category]: event.target.value }))} placeholder="Operational record ID" className="block w-full rounded border border-slate-200 px-2 py-1.5 text-xs" /></label>}
+                      </div>
+                    </details>
                     <Button type="button" size="sm" onClick={() => void upload(category)} loading={uploading === category} disabled={!uploadable || !selected[category] || uploading !== null}>
                       <Upload className="h-3.5 w-3.5" aria-hidden="true" /> Upload
                     </Button>
@@ -524,7 +531,8 @@ export function EvidencePanel({
                   </div>
                 )}
                 {messages[category] && <p className="mt-2 text-xs text-slate-600" role="status">{messages[category]}</p>}
-              </section>
+                </div>
+              </details>
             );
           })}
         </div>

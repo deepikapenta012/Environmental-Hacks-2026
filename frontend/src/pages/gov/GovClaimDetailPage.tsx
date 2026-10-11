@@ -460,7 +460,7 @@ function GovClaimDetailPageContent() {
                       </p>
                     </div>
                     <div className="rounded-lg border border-amber-200 bg-amber-50/60 p-3">
-                      <p className="text-xs font-semibold text-amber-900">Missing required documents</p>
+                      <p className="text-xs font-semibold text-amber-900">Missing required evidence</p>
                       {missingDocuments.length ? (
                         <>
                           <ul className="mt-1 list-disc space-y-0.5 pl-4 text-xs text-amber-800">
@@ -468,7 +468,7 @@ function GovClaimDetailPageContent() {
                           </ul>
                           <Button variant="secondary" size="sm" className="mt-2 w-full justify-center" loading={requestingClarification}
                             onClick={() => void handleClarification(missingDocumentsRequest)}>
-                            Request Missing Documents
+                            Request Evidence
                           </Button>
                         </>
                       ) : <p className="mt-1 text-xs text-emerald-700">All required documents due at this stage are attached.</p>}
