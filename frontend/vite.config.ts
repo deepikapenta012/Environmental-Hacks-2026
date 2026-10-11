@@ -9,6 +9,8 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  // Vite's `server.proxy` is for the local dev server only. Production builds
+  // use VITE_API_BASE_URL in the API client instead.
   server: {
     port: 5173,
     proxy: {
