@@ -7,7 +7,7 @@ interface TopBarProps {
 
 export function TopBar({ title, subtitle }: TopBarProps) {
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b border-slate-200 bg-white/90 backdrop-blur-sm px-6">
+    <header className="sticky top-14 z-30 flex h-14 items-center justify-between gap-4 border-b border-slate-200 bg-white/90 px-4 backdrop-blur-sm md:top-0 md:px-6">
       <div>
         <h1 className="text-sm font-semibold text-slate-900">{title}</h1>
         {subtitle && (

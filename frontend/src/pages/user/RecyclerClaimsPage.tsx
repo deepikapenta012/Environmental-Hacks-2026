@@ -81,6 +81,7 @@ function AssignedClaimDetail({ initialClaim, onClaimUpdated }: { initialClaim: R
   const balance = claim.mass_balance;
 
   return (
+    <div id="recycler-workflow">
     <Card>
       <div className="space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
@@ -107,7 +108,7 @@ function AssignedClaimDetail({ initialClaim, onClaimUpdated }: { initialClaim: R
         {claim.clarification_reason && <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">Officer requested clarification: {claim.clarification_reason}</p>}
 
         {(claim.status === 'AWAITING_RECYCLER_CONFIRMATION' || (claim.status === 'AWAITING_CLARIFICATION' && !claim.received_at)) && (
-          <form onSubmit={saveReceipt} className="space-y-3 rounded-lg border border-amber-200 bg-amber-50/50 p-4">
+          <form id="recycler-receipt" onSubmit={saveReceipt} className="space-y-3 rounded-lg border border-amber-200 bg-amber-50/50 p-4">
             <h3 className="text-xs font-bold uppercase tracking-wide text-slate-600">Confirm Receipt</h3>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <label className="space-y-1 text-xs font-medium text-slate-600">
@@ -128,7 +129,7 @@ function AssignedClaimDetail({ initialClaim, onClaimUpdated }: { initialClaim: R
         )}
 
         {['RECEIVED', 'PROCESSING', 'AWAITING_CLARIFICATION'].includes(claim.status) && claim.received_at && (
-          <form onSubmit={saveProcessing} className="space-y-3 rounded-lg border border-blue-200 bg-blue-50/40 p-4">
+          <form id="recycler-processing" onSubmit={saveProcessing} className="space-y-3 rounded-lg border border-blue-200 bg-blue-50/40 p-4">
             <h3 className="text-xs font-bold uppercase tracking-wide text-slate-600">Processing Batches</h3>
             {batches.map((batch, index) => <div key={index} className="grid grid-cols-1 gap-3 rounded-lg border border-blue-100 bg-white p-3 sm:grid-cols-2">
               <p className="text-xs font-semibold text-slate-600 sm:col-span-2">Batch {index + 1}</p>
@@ -168,7 +169,7 @@ function AssignedClaimDetail({ initialClaim, onClaimUpdated }: { initialClaim: R
           <summary className="cursor-pointer text-xs font-semibold text-slate-700">Processing history ({claim.processing_batches.length})</summary>
           <div className="mt-2 space-y-2">{claim.processing_batches.map(batch => <p key={batch.batch_id} className="text-xs text-slate-600">{formatWeight(batch.processed_output_kg)} processed · {formatDate(batch.processing_date)}</p>)}</div>
         </details> : null}
-        <details className="rounded-lg border border-slate-200 px-3 py-2">
+        <details id="recycler-audit" className="rounded-lg border border-slate-200 px-3 py-2">
           <summary className="cursor-pointer text-xs font-semibold text-slate-700">Adjustments &amp; audit history</summary>
           <div className="mt-3 space-y-3"><MassBalanceAdjustments claim={claim} allowCreate={!!claim.processing_completed_at} onUpdated={updateClaim} /><AuditTimeline events={claim.audit_events} chainValid={claim.audit_chain_valid} /></div>
         </details>
@@ -203,6 +204,7 @@ function AssignedClaimDetail({ initialClaim, onClaimUpdated }: { initialClaim: R
         )}
       </div>
     </Card>
+    </div>
   );
 }
 
@@ -252,9 +254,11 @@ export function RecyclerClaimsPage() {
               <Button type="button" variant="secondary" size="sm" onClick={() => setSelectedClaimId(null)}>
                 <ArrowLeft className="h-4 w-4" /> All claims
               </Button>
-              <a href="#recycler-evidence" className="inline-flex items-center gap-2 rounded-lg bg-teal-700 px-3 py-2 text-sm font-semibold text-white hover:bg-teal-800">
-                <FilePlus2 className="h-4 w-4" /> Add recycler documents
-              </a>
+              <nav aria-label="Claim sections" className="flex flex-wrap gap-2">
+                <a href="#recycler-workflow" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50">Workflow</a>
+                <a href="#recycler-evidence" className="inline-flex items-center gap-1.5 rounded-lg bg-teal-700 px-3 py-2 text-xs font-semibold text-white hover:bg-teal-800"><FilePlus2 className="h-3.5 w-3.5" />Documents</a>
+                <a href="#recycler-audit" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50">Audit history</a>
+              </nav>
             </div>
             <AssignedClaimDetail key={selectedClaim.id} initialClaim={selectedClaim} onClaimUpdated={updateClaim} />
           </>

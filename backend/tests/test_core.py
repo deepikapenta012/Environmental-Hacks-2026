@@ -267,7 +267,7 @@ def test_risk_score_sums_and_classifies_rule_contributions():
         Flag("DUP", "DUPLICATE", "CRITICAL", "duplicate", score_delta=28),
     ]
 
-    assert compute_risk_score(flags) == (68, "HIGH")
+    assert compute_risk_score(flags) == (68, "CRITICAL")
     assert compute_risk_score(flags * 5) == (100, "CRITICAL")
 
 
@@ -277,8 +277,23 @@ def test_configured_score_groups_cap_correlated_mass_balance_findings():
         Flag("MB2", "MASS_BALANCE", "WARNING", "receipt differs from declaration", rule_reference="MB-002", score_delta=18),
     ]
     score, band, per_flag = score_flags(flags)
-    assert (score, band, per_flag) == (30, "MEDIUM", [18, 12])
-    assert score_flags(flags, weights={"MB-001": 5}, group_caps={"MASS_BALANCE": 20}) == (20, "LOW", [5, 15])
+    assert (score, band, per_flag) == (30, "CRITICAL", [18, 12])
+    assert score_flags(flags, weights={"MB-001": 5}, group_caps={"MASS_BALANCE": 20}) == (20, "CRITICAL", [5, 15])
+
+
+def test_risk_labels_follow_discrepancy_count_and_severity():
+    assert score_flags([Flag("INFO", "COMPLETENESS", "INFO", "missing evidence")])[1] == "LOW"
+    assert score_flags([Flag("W1", "DOCUMENT", "WARNING", "one discrepancy")])[1] == "MEDIUM"
+    assert score_flags([
+        Flag("W1", "DOCUMENT", "WARNING", "one"),
+        Flag("W2", "TRANSPORT", "WARNING", "two"),
+    ])[1] == "MEDIUM"
+    assert score_flags([
+        Flag("W1", "DOCUMENT", "WARNING", "one"),
+        Flag("W2", "TRANSPORT", "WARNING", "two"),
+        Flag("W3", "DUPLICATE", "WARNING", "three"),
+    ])[1] == "HIGH"
+    assert score_flags([Flag("C1", "MASS_BALANCE", "CRITICAL", "critical discrepancy")])[1] == "CRITICAL"
 
 
 def test_missing_measurements_are_informational_and_do_not_add_risk():

@@ -62,6 +62,23 @@ export function UserClaimDetailPage() {
           <Badge className={`${sc.bg} ${sc.text}`}>{sc.label}</Badge>
         </div>
 
+        <Card>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {[{ label: 'Producer', org: claim.producer }, { label: 'Recycler', org: claim.recycler }].map(({ label, org }) => (
+              <div key={label}>
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{label}</p>
+                <p className="mt-1 text-sm font-semibold text-slate-800">{org.name}</p>
+                <p className="text-xs text-slate-500">{org.registration_number} · {org.city}</p>
+              </div>
+            ))}
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Declared weight</p>
+              <p className="mt-1 text-sm font-semibold text-slate-800">{formatWeight(claim.mass_balance.declared_input_kg)}</p>
+              <p className="text-xs text-slate-500">{claim.waste_category}</p>
+            </div>
+          </div>
+        </Card>
+
         <EvidencePanel
           claimId={claim.id}
           claim={claim}
@@ -72,24 +89,17 @@ export function UserClaimDetailPage() {
           party={belongsToRecyclerFacility ? 'RECYCLER' : 'PRODUCER'}
           onClaimUpdated={setClaim}
         />
-        <MassBalanceAdjustments claim={claim} onUpdated={setClaim} />
-        <AuditTimeline events={claim.audit_events} chainValid={claim.audit_chain_valid} />
+        <details className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+          <summary className="cursor-pointer text-sm font-semibold text-slate-700">Mass balance adjustments</summary>
+          <div className="mt-3"><MassBalanceAdjustments claim={claim} onUpdated={setClaim} /></div>
+        </details>
+        <details className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+          <summary className="cursor-pointer text-sm font-semibold text-slate-700">Audit history</summary>
+          <div className="mt-3"><AuditTimeline events={claim.audit_events} chainValid={claim.audit_chain_valid} /></div>
+        </details>
 
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-5">
-            <Card>
-              <div className="grid grid-cols-2 gap-4">
-                {[{ label: 'Producer', org: claim.producer }, { label: 'Recycler', org: claim.recycler }].map(({ label, org }) => (
-                  <div key={label}>
-                    <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 mb-1">{label}</p>
-                    <p className="text-sm font-semibold text-slate-800">{org.name}</p>
-                    <p className="text-xs text-slate-500">{org.registration_number}</p>
-                    <p className="text-xs text-slate-500">{org.city}</p>
-                  </div>
-                ))}
-              </div>
-            </Card>
-
             <div>
               <nav className="flex gap-0.5 rounded-lg border border-slate-200 bg-slate-50 p-1 mb-4" role="tablist">
                 {TABS.map(({ id: tid, label, icon: Icon }) => (

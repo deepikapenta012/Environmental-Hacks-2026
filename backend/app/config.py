@@ -42,6 +42,17 @@ class Settings(BaseSettings):
     # Secure evidence storage
     evidence_storage_root: str = "./evidence_store"
     evidence_max_file_size: int = 10 * 1024 * 1024  # 10 MB
+    evidence_storage_backend: str = "local"
+    evidence_s3_bucket: str = ""
+    evidence_s3_prefix: str = "chainguard/evidence"
+    evidence_s3_kms_key_id: str = ""
+    aws_region: str = "ap-south-1"
+
+    # OpenTelemetry exports to an AWS Distro for OpenTelemetry Collector when enabled.
+    otel_enabled: bool = False
+    otel_service_name: str = "ewaste-chainguard-api"
+    otel_collector_endpoint: str = "http://127.0.0.1:4317"
+    otel_insecure: bool = True
 
     @property
     def cors_origins_list(self) -> list[str]:

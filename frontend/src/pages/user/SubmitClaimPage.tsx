@@ -239,7 +239,19 @@ export function SubmitClaimPage() {
     e.preventDefault();
     setSubmitError('');
     const errs = validate(form);
-    if (Object.keys(errs).length) { setErrors(errs); return; }
+    if (Object.keys(errs).length) {
+      setErrors(errs);
+      const firstError = Object.keys(errs)[0];
+      const section = ['producer_name', 'producer_registration_number', 'recycler_name', 'recycler_facility_id'].includes(firstError)
+        ? 'parties'
+        : ['waste_category', 'declared_weight_kg', 'collection_date'].includes(firstError) ? 'waste' : 'transport';
+      const details = e.currentTarget.querySelector<HTMLDetailsElement>(`details[data-section="${section}"]`);
+      if (details) {
+        details.open = true;
+        details.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
     setSubmitting(true);
     try {
       let claim = await submitClaim({
@@ -366,11 +378,14 @@ export function SubmitClaimPage() {
     <div className="flex flex-col min-h-full">
       <TopBar title="Submit Recycling Claim" subtitle="All fields marked * are required" />
       <div className="flex-1 p-6 animate-fade-in">
-        <form onSubmit={handleSubmit} noValidate className="max-w-3xl mx-auto space-y-5">
+        <form onSubmit={handleSubmit} noValidate className="max-w-3xl mx-auto space-y-3">
 
           {/* Parties */}
-          <Card>
-            <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-4">Parties</h2>
+          <details open data-section="parties" className="group rounded-xl border border-slate-200 bg-white shadow-sm">
+            <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-sm font-semibold text-slate-800 marker:content-none">
+              <span>1. Parties</span><span className="text-xs font-normal text-slate-400 group-open:hidden">Expand</span><span className="hidden text-xs font-normal text-slate-400 group-open:inline">Collapse</span>
+            </summary>
+            <div className="space-y-4 px-5 pb-5">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Field label="Producer / Your Organisation" error={errors.producer_name} required>
                 <input type="text" value={form.producer_name} onChange={set('producer_name')} placeholder="e.g. Acme Electronics Ltd" className={inp(!!errors.producer_name)} />
@@ -398,21 +413,12 @@ export function SubmitClaimPage() {
                     No authorized recycler facilities are configured in this workspace. An administrator must verify and register a facility before it can be selected for a claim.
                   </p>
                 )}
-                {!recyclerAccountsError && recyclerAccounts.length > 0 && (
-                  <ul aria-label="Registered recyclers" className="mt-2 divide-y divide-slate-100 rounded-lg border border-slate-200 bg-slate-50">
-                    {recyclerAccounts.map(account => (
-                      <li key={account.id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-xs">
-                        <span className="font-medium text-slate-700">{account.organisation}</span>
-                        <span className="text-slate-500">Registration: {account.registration_number || 'Not listed'}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                {form.recycler_facility_id && <p className="text-[11px] text-slate-500">Registration: {form.recycler_registration_number || 'Not listed'}</p>}
               </Field>
             </div>
             {!loadingRecyclers && !recyclerAccountsError && recyclerAccounts.length === 0 && (
-              <div className="mt-4 rounded-lg border border-slate-200 bg-white p-3" aria-label="Public recycler registry references">
-                <h3 className="text-xs font-semibold text-slate-700">Public registry references · administrator review needed</h3>
+              <details className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3" aria-label="Public recycler registry references">
+                <summary className="cursor-pointer text-xs font-semibold text-slate-700">Public registry references · administrator review needed</summary>
                 <p className="mt-1 text-[10px] text-slate-500">These government-published records are references only. Verify current authorization and permitted waste categories before registering them in ChainGuard.</p>
                 <ul className="mt-2 divide-y divide-slate-100">
                   {RECYCLER_REGISTRY_REFERENCES.map(facility => (
@@ -423,13 +429,15 @@ export function SubmitClaimPage() {
                   ))}
                 </ul>
                 <p className="mt-2 text-[10px] text-slate-400">Sources: <a className="underline" href="https://ospcboard.odisha.gov.in/wp-content/uploads/2025/11/empanelled-list-of-e-waste-recyclers-registered-with-CPCB.pdf" target="_blank" rel="noreferrer">Odisha SPCB / CPCB recycler list</a> and <a className="underline" href="https://www.wbpcb.gov.in/files/Fr-04-2024-04-11-44list%20of%20E%20Waste%20recyclers.pdf" target="_blank" rel="noreferrer">West Bengal PCB authorization list</a>.</p>
-              </div>
+              </details>
             )}
-          </Card>
+            </div>
+          </details>
 
           {/* Waste */}
-          <Card>
-            <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-4">Waste Details</h2>
+          <details data-section="waste" className="group rounded-xl border border-slate-200 bg-white shadow-sm">
+            <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-sm font-semibold text-slate-800 marker:content-none"><span>2. Waste details</span><span className="text-xs font-normal text-slate-400 group-open:hidden">Expand</span><span className="hidden text-xs font-normal text-slate-400 group-open:inline">Collapse</span></summary>
+            <div className="px-5 pb-5">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Field label="Waste Category" error={errors.waste_category} required>
                 <select value={form.waste_category} onChange={set('waste_category')} className={inp(!!errors.waste_category)}>
@@ -444,11 +452,13 @@ export function SubmitClaimPage() {
                 <input type="number" min="0.1" step="0.1" value={form.declared_weight_kg} onChange={set('declared_weight_kg')} placeholder="e.g. 500" className={inp(!!errors.declared_weight_kg)} />
               </Field>
             </div>
-          </Card>
+            </div>
+          </details>
 
           {/* Transport */}
-          <Card>
-            <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-4">Transport</h2>
+          <details data-section="transport" className="group rounded-xl border border-slate-200 bg-white shadow-sm">
+            <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-sm font-semibold text-slate-800 marker:content-none"><span>3. Transport</span><span className="text-xs font-normal text-slate-400 group-open:hidden">Expand</span><span className="hidden text-xs font-normal text-slate-400 group-open:inline">Collapse</span></summary>
+            <div className="px-5 pb-5">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Field label="Vehicle Registration" error={errors.vehicle_registration} required>
                 <input type="text" value={form.vehicle_registration} onChange={set('vehicle_registration')} placeholder="e.g. KA-01-AB-1234" className={inp(!!errors.vehicle_registration)} />
@@ -507,12 +517,14 @@ export function SubmitClaimPage() {
                 <input type="datetime-local" value={form.arrived_at} readOnly aria-readonly="true" className={`${inp(!!errors.arrived_at)} bg-slate-50`} />
               </Field>
             </div>
-          </Card>
+            </div>
+          </details>
 
           {/* Producer evidence */}
-          <Card>
-            <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">Producer / Collector Evidence</h2>
-            <p className="mb-4 text-xs text-slate-500">Each file uploads to its own checklist category. Recycler-only records are added later by the assigned recycler.</p>
+          <details className="group rounded-xl border border-slate-200 bg-white shadow-sm">
+            <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-sm font-semibold text-slate-800 marker:content-none"><span>4. Documents</span><span className="text-xs font-normal text-slate-400 group-open:hidden">Expand</span><span className="hidden text-xs font-normal text-slate-400 group-open:inline">Collapse</span></summary>
+            <div className="px-5 pb-5">
+            <p className="mb-4 text-xs text-slate-500">Upload available producer documents. The recycler adds receipt and processing records later.</p>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Collection / Origin Weight Slip · Required" hint="Producer / Collector · Supports the declared weight at origin · PDF or image, up to 10 MB.">
                 <input
@@ -559,18 +571,22 @@ export function SubmitClaimPage() {
                 <p className="mt-2 text-[10px] text-amber-700">Upload area appears in Recycler Work after processing is complete.</p>
               </div>
             </div>
-          </Card>
+            </div>
+          </details>
 
           <p className="text-center text-[10px] text-slate-400">
             Address lookup uses OpenStreetMap data. © <a className="underline" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a>.
           </p>
 
           {/* Notes */}
-          <Card>
+          <details className="group rounded-xl border border-slate-200 bg-white shadow-sm">
+            <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-sm font-semibold text-slate-800 marker:content-none"><span>5. Additional notes <span className="font-normal text-slate-400">· optional</span></span><span className="text-xs font-normal text-slate-400 group-open:hidden">Expand</span><span className="hidden text-xs font-normal text-slate-400 group-open:inline">Collapse</span></summary>
+            <div className="px-5 pb-5">
             <Field label="Additional Notes" hint="Optional — any context for the auditor">
               <textarea rows={3} value={form.notes} onChange={set('notes')} placeholder="Any deviations from standard procedure, special handling requirements…" className={`${inp(false)} resize-none`} />
             </Field>
-          </Card>
+            </div>
+          </details>
 
           {submitError && (
             <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">

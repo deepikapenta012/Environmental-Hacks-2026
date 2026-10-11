@@ -22,7 +22,7 @@ from app.models import (
 )
 from app.auth import hash_password
 from app.schemas import ClaimCreate
-from app.services.storage import LocalStorageBackend, set_storage_backend, get_storage_backend
+from app.services.storage import LocalStorageBackend, S3StorageBackend, set_storage_backend, get_storage_backend
 
 
 # ── Fixtures ─────────────────────────────────────────────────────────────
@@ -179,6 +179,74 @@ class TestLocalStorageBackend:
         # The key should be safe
         path = storage.resolve_path(key)
         assert path.is_relative_to(storage.root)
+
+
+class TestS3StorageBackend:
+    class FakeS3:
+        def __init__(self):
+            self.objects = {}
+            self.put_request = None
+
+        def put_object(self, **request):
+            self.put_request = request
+            self.objects[(request["Bucket"], request["Key"])] = request["Body"]
+
+        def get_object(self, *, Bucket, Key):
+            content = self.objects.get((Bucket, Key))
+            if content is None:
+                raise self.not_found()
+            return {"Body": io.BytesIO(content)}
+
+        def head_object(self, *, Bucket, Key):
+            if (Bucket, Key) not in self.objects:
+                raise self.not_found()
+
+        def delete_object(self, *, Bucket, Key):
+            self.objects.pop((Bucket, Key), None)
+
+        @staticmethod
+        def not_found():
+            error = RuntimeError("missing")
+            error.response = {"Error": {"Code": "NoSuchKey"}, "ResponseMetadata": {"HTTPStatusCode": 404}}
+            return error
+
+    def test_s3_round_trip_uses_private_encryption_and_safe_key(self):
+        client = self.FakeS3()
+        storage = S3StorageBackend("private-evidence", region="ap-south-1",
+                                   prefix="chainguard/evidence", client=client)
+        content = b"%PDF-1.4 evidence"
+        key = storage.save("claim-123", ".pdf", content)
+
+        assert key.startswith("chainguard/evidence/claim-123/")
+        assert key.endswith(".pdf")
+        assert client.put_request["ServerSideEncryption"] == "AES256"
+        assert client.put_request["ContentType"] == "application/pdf"
+        assert storage.exists(key)
+        assert storage.load(key) == content
+        storage.delete(key)
+        assert not storage.exists(key)
+
+    def test_s3_supports_customer_managed_kms_key(self):
+        client = self.FakeS3()
+        storage = S3StorageBackend("private-evidence", region="ap-south-1",
+                                   kms_key_id="alias/chain-guard", client=client)
+        storage.save("claim-123", ".png", b"image")
+        assert client.put_request["ServerSideEncryption"] == "aws:kms"
+        assert client.put_request["SSEKMSKeyId"] == "alias/chain-guard"
+
+    def test_s3_missing_object_and_unsafe_key(self):
+        storage = S3StorageBackend("private-evidence", region="ap-south-1", client=self.FakeS3())
+        assert not storage.exists("claim-123/missing.pdf")
+        with pytest.raises(FileNotFoundError):
+            storage.load("claim-123/missing.pdf")
+        with pytest.raises(FileNotFoundError):
+            storage.load("../private/other.pdf")
+
+    def test_s3_rejects_unsafe_prefix_and_missing_bucket(self):
+        with pytest.raises(ValueError):
+            S3StorageBackend("bucket", region="ap-south-1", prefix="../private", client=self.FakeS3())
+        with pytest.raises(ValueError):
+            S3StorageBackend("", region="ap-south-1", client=self.FakeS3())
 
 
 # ── File Validation Tests ────────────────────────────────────────────────

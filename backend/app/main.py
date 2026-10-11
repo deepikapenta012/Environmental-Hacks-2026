@@ -5,6 +5,7 @@ import time
 import uuid
 from datetime import datetime
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
@@ -12,6 +13,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 
 from app.config import get_settings
 from app.api import api_router
@@ -25,8 +27,34 @@ from app.auth import hash_password
 from app.models import (User, RecyclerFacility, FacilityMembership,
                         GovernmentJurisdiction, GovernmentJurisdictionAssignment, Claim, AuditEvent)
 from app.services.audit import calculate_event_hash, event_hash_fields, request_correlation_id
+from app.services.telemetry import configure_telemetry
 
 logger = logging.getLogger("chainguard")
+
+
+def validate_production_cors_origins(origins: list[str]) -> None:
+    """Reject wildcard, insecure, and malformed browser origins in production."""
+    if not origins:
+        raise RuntimeError("CORS_ORIGINS must contain at least one production frontend origin")
+    for origin in origins:
+        try:
+            parsed = urlsplit(origin)
+            hostname = (parsed.hostname or "").lower()
+            # Accessing .port validates malformed/out-of-range ports.
+            parsed.port
+        except ValueError as exc:
+            raise RuntimeError("CORS_ORIGINS contains an invalid origin") from exc
+        if (origin.strip() != origin or "*" in origin or parsed.scheme != "https" or not hostname
+                or parsed.username or parsed.password or parsed.path
+                or parsed.query or parsed.fragment
+                or hostname == "localhost" or hostname.endswith(".localhost")
+                or hostname.endswith(".local") or hostname in {"127.0.0.1", "::1"}):
+            raise RuntimeError("CORS_ORIGINS must contain exact HTTPS production origins only")
+
+
+def _database_ready() -> bool:
+    with engine.connect() as connection:
+        return connection.execute(text("SELECT 1")).scalar_one() == 1
 
 # Import models so they register with Base.metadata before create_all
 import app.models  # noqa: F401
@@ -40,13 +68,15 @@ async def lifespan(app: FastAPI):
         secret = settings.jwt_secret_key
         if len(secret) < 32 or secret.lower() in {"changeme", "secret", "development", ""}:
             raise RuntimeError("JWT_SECRET_KEY must be a unique secret of at least 32 characters in production")
-        if not settings.cors_origins_list or any("localhost" in origin or "127.0.0.1" in origin for origin in settings.cors_origins_list):
-            raise RuntimeError("CORS_ORIGINS must contain only the production frontend origins")
+        validate_production_cors_origins(settings.cors_origins_list)
     Base.metadata.create_all(bind=engine)
     run_migrations()
     migrate_legacy_audit_history()
     seed_public_recycler_facilities()
     seed_configured_users()
+    telemetry_enabled = configure_telemetry(app, settings, engine)
+    if telemetry_enabled:
+        logger.info("OpenTelemetry instrumentation enabled", extra={"service_name": settings.otel_service_name})
     logger.info("database startup complete")
     yield
 
@@ -395,4 +425,21 @@ def root():
 
 @app.get("/health")
 def health():
+    """Backward-compatible liveness endpoint; use /health/ready for dependencies."""
     return {"status": "healthy"}
+
+
+@app.get("/health/live")
+def health_live():
+    return {"status": "alive"}
+
+
+@app.get("/health/ready")
+def health_ready():
+    try:
+        if not _database_ready():
+            raise RuntimeError("Database health query returned an unexpected result")
+    except Exception as exc:
+        logger.warning("readiness check failed", extra={"dependency": "database", "error_type": type(exc).__name__})
+        raise HTTPException(status_code=503, detail="Service is not ready") from exc
+    return {"status": "ready", "dependencies": {"database": "ready"}}

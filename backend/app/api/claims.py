@@ -1986,10 +1986,10 @@ def download_evidence(
     # Try the new storage backend first
     try:
         content = storage.load(storage_key)
-        path = storage.resolve_path(storage_key)
         if not hmac.compare_digest(hashlib.sha256(content).hexdigest(), evidence.sha256):
             raise HTTPException(status_code=409, detail="Stored evidence failed its integrity check")
-        media_type = evidence.mime_type or ALLOWED_EVIDENCE.get(path.suffix.lower(), ("application/octet-stream",))[0]
+        suffix = Path(evidence.filename).suffix.lower()
+        media_type = evidence.mime_type or ALLOWED_EVIDENCE.get(suffix, ("application/octet-stream",))[0]
         return _evidence_file_response(content, media_type, evidence.filename)
     except FileNotFoundError:
         pass

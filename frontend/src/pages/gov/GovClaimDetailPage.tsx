@@ -280,8 +280,9 @@ function GovClaimDetailPageContent() {
             party="AUDITOR"
           />
 
-          <Card>
-            <h2 className="mb-3 text-xs font-bold uppercase tracking-wide text-slate-500">Transaction Trail</h2>
+          <details className="rounded-xl border border-slate-200 bg-white shadow-sm">
+            <summary className="cursor-pointer px-5 py-4 text-sm font-semibold text-slate-700">Transaction overview</summary>
+            <div className="px-5 pb-5">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
               <div className="rounded-lg bg-slate-50 p-3">
                 <p className="text-[10px] font-semibold uppercase text-slate-500">Producer Declaration</p>
@@ -309,10 +310,12 @@ function GovClaimDetailPageContent() {
                 <p className="text-[10px] text-slate-500">{isVerified ? 'Approved' : isRejected ? 'Rejected' : 'Awaiting review'}</p>
               </div>
             </div>
-          </Card>
+            </div>
+          </details>
 
-          {claim.processing_batches?.length ? <Card>
-            <h2 className="mb-3 text-xs font-bold uppercase tracking-wide text-slate-500">Recycler Processing</h2>
+          {claim.processing_batches?.length ? <details className="rounded-xl border border-slate-200 bg-white shadow-sm">
+            <summary className="cursor-pointer px-5 py-4 text-sm font-semibold text-slate-700">Processing records ({claim.processing_batches.length})</summary>
+            <div className="space-y-2 px-5 pb-5">
             <div className="space-y-2">
               {claim.processing_batches?.map(batch => <div key={batch.batch_id} className="rounded-lg bg-slate-50 p-3 text-xs text-slate-600">
                 <p className="font-semibold text-slate-800">{batch.batch_id} · {formatWeight(batch.processed_output_kg)} processed</p>
@@ -322,9 +325,15 @@ function GovClaimDetailPageContent() {
               </div>)}
               {claim.recycler_notes && <p className="rounded-lg bg-slate-50 p-3 text-xs text-slate-600">Recycler receipt / processing notes: {claim.recycler_notes}</p>}
             </div>
-          </Card> : null}
-          <MassBalanceAdjustments claim={claim} allowReview onUpdated={setClaim} />
-          <AuditTimeline events={claim.audit_events} chainValid={claim.audit_chain_valid} />
+            </div>
+          </details> : null}
+          <details className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+            <summary className="cursor-pointer text-sm font-semibold text-slate-700">Audit history &amp; mass balance adjustments</summary>
+            <div className="mt-3 space-y-4">
+              <MassBalanceAdjustments claim={claim} allowReview onUpdated={setClaim} />
+              <AuditTimeline events={claim.audit_events} chainValid={claim.audit_chain_valid} />
+            </div>
+          </details>
 
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
             {/* Main content */}
@@ -477,7 +486,7 @@ function GovClaimDetailPageContent() {
                       Request clarification
                       <textarea rows={2} value={clarificationReason} onChange={event => setClarificationReason(event.target.value)} placeholder="Describe the correction or missing information needed" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" />
                     </label>
-                    <Button variant="secondary" size="sm" className="w-full justify-center" loading={requestingClarification} disabled={!clarificationReason.trim()} onClick={handleClarification}>Request Clarification</Button>
+                    <Button variant="secondary" size="sm" className="w-full justify-center" loading={requestingClarification} disabled={!clarificationReason.trim()} onClick={() => void handleClarification()}>Request Clarification</Button>
                     <Button
                       className="w-full justify-center bg-emerald-600 hover:bg-emerald-700 text-white"
                       size="sm"

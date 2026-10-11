@@ -13,7 +13,7 @@ export function UserLayout() {
   return (
     <div className="flex h-full">
       <UserSidebar />
-      <main className="flex-1 overflow-y-auto pl-60" id="main-content">
+      <main className="min-w-0 flex-1 overflow-y-auto pt-14 md:pt-0 md:pl-60" id="main-content">
         <Outlet />
       </main>
     </div>

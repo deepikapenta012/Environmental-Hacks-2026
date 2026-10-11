@@ -21,6 +21,7 @@ ChainGuard is a local-first workflow application for recording electronic-waste 
 - Set `JWT_SECRET_KEY` to a unique random secret for local use. Production requires at least 32 characters and production-only CORS origins.
 - Start the API from `backend` with `uvicorn app.main:app --reload` and the UI from `frontend` with `npm run dev`. `start.bat` is a Windows convenience launcher.
 - API docs are available at `/api/docs` while the API is running.
+- `/health` and `/health/live` are liveness checks; `/health/ready` runs a database dependency check and returns `503` when the database is unavailable.
 
 Useful environment settings (configured in `.env` or the deployment environment):
 
@@ -30,10 +31,12 @@ Useful environment settings (configured in `.env` or the deployment environment)
 | `JWT_SECRET_KEY` | Signing key for bearer access tokens. Set a new high-entropy value per environment. |
 | `ACCESS_TOKEN_MINUTES` | Access-token lifetime. |
 | `ENVIRONMENT` | Use `production` to enable production startup checks and HSTS. |
-| `CORS_ORIGINS` | Comma-separated exact frontend origins. |
+| `CORS_ORIGINS` | Comma-separated exact frontend origins. Production requires HTTPS origins without paths, wildcards, or local hosts. |
 | `MAX_REQUEST_BODY_BYTES` | Maximum request body, including chunked bodies. Upload handlers independently enforce configured file size. |
 | `LOGIN_ATTEMPT_LIMIT`, `LOGIN_ATTEMPT_WINDOW_SECONDS` | Process-local failed-login throttle. Multi-worker deployments need a shared rate-limit store or gateway limit. |
 | `EVIDENCE_STORAGE_ROOT`, `EVIDENCE_MAX_FILE_SIZE` | Private local evidence directory and per-file byte limit. |
+| `EVIDENCE_STORAGE_BACKEND`, `EVIDENCE_S3_BUCKET`, `EVIDENCE_S3_PREFIX`, `EVIDENCE_S3_KMS_KEY_ID`, `AWS_REGION` | Select local or S3 evidence storage. S3 uses the AWS SDK default credential chain; prefer an IAM task/instance role, enable bucket versioning and block public access, and grant only object access to the configured prefix. |
+| `OTEL_ENABLED`, `OTEL_SERVICE_NAME`, `OTEL_COLLECTOR_ENDPOINT`, `OTEL_INSECURE` | Enable FastAPI/SQLAlchemy traces and metrics to an ADOT Collector. `deploy/adot-collector.yaml` exports traces to X-Ray and metrics to CloudWatch. |
 | `EVIDENCE_OCR_ENABLED` | Enable optional local Tesseract OCR for image and scanned PDF evidence. Defaults to `false`; no cloud credentials are used. Extraction limits are 30 pages and a 20-second per-page OCR timeout. |
 | `BOOTSTRAP_USERS_JSON`, `BOOTSTRAP_FACILITIES_JSON`, `BOOTSTRAP_MEMBERSHIPS_JSON`, `BOOTSTRAP_JURISDICTIONS_JSON` | Optional trusted server-side local provisioning. Do not commit passwords or real personal data in these values. |
 
@@ -47,7 +50,9 @@ Back up the database and evidence directory together before deployment or migrat
 
 ## Evidence and verification
 
-Evidence files are written beneath the configured private storage root, with metadata and opaque storage keys held in the database. Downloads go through authenticated API authorization. Keep the directory outside public web roots, include it in encrypted backups, and restrict OS access. No malware scanning is implemented. No cloud storage adapter is configured.
+Evidence metadata and opaque storage keys remain in the database. The default local adapter writes to the configured private directory. Set `EVIDENCE_STORAGE_BACKEND=s3` and configure the S3 bucket to store objects in Amazon S3; application downloads still pass through claim authorization and SHA-256 integrity verification. Use an IAM role rather than long-lived AWS keys, keep public access blocked, and enable bucket versioning and encryption. No malware scanning is implemented.
+
+OpenTelemetry is optional and disabled by default. Install backend requirements, run an AWS Distro for OpenTelemetry Collector using `deploy/adot-collector.yaml`, then enable `OTEL_ENABLED`. The collector needs least-privilege permissions for X-Ray trace submission and CloudWatch metric/log delivery; restrict its OTLP ports to the application network. No telemetry is sent to AWS when the setting is disabled.
 
 Verification findings are data-quality signals for human review, not fraud determinations. Risk summaries use the implemented deterministic rules. Image, graph, and ML score layers are returned as unavailable rather than as zero. Producer-declared transport details and recycler-confirmed receipt are separate records; no live vehicle telemetry is claimed.
 
@@ -62,6 +67,8 @@ cd ..\frontend
 npm run lint
 npm run build
 ```
+
+GitHub Actions runs these backend tests and frontend lint/build checks for pushes to `main` and pull requests (`.github/workflows/ci.yml`).
 
 ## Deployment boundary
 

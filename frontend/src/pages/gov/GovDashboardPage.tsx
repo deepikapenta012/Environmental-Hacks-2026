@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ClipboardList, ShieldAlert, CheckCircle2, Clock, Search, AlertTriangle, XCircle, MessageSquareWarning } from 'lucide-react';
+import { ClipboardList, ShieldAlert, Clock, Search, AlertTriangle } from 'lucide-react';
 import { TopBar } from '@/components/layout/TopBar';
 import { Footer } from '@/components/layout/Footer';
 import { Card, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -73,16 +73,20 @@ export function GovDashboardPage() {
     <div className="flex flex-col min-h-full">
       <TopBar title="Government Dashboard" subtitle={`Monitor recycling claims and evidence, ${user?.name} · ${user?.organisation}`} />
       <div className="flex-1 p-6 space-y-6 animate-fade-in">
-        <section className="grid grid-cols-2 gap-4 sm:grid-cols-4" aria-label="Jurisdiction claim totals">
+        <section className="grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label="Jurisdiction claim totals">
           <StatCard label="Total Claims" value={total} icon={ClipboardList} accent="teal" />
           <StatCard label="Awaiting Review" value={awaiting} icon={Clock} accent="amber" />
           <StatCard label="High / Critical" value={highCritical} icon={ShieldAlert} accent="red" />
           <StatCard label="Claims With Active Flags" value={unresolved} icon={AlertTriangle} accent="amber" />
-          <StatCard label="Clarification" value={clarification} icon={MessageSquareWarning} accent="default" />
-          <StatCard label="Approved" value={approved} icon={CheckCircle2} accent="emerald" />
-          <StatCard label="Rejected" value={rejected} icon={XCircle} accent="red" />
-          <StatCard label="Average Risk" value={avgRisk} icon={ClipboardList} accent="default" subtext="out of 100" />
         </section>
+
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg border border-slate-200 bg-white px-4 py-3 text-xs">
+          <span className="font-semibold text-slate-500">Other outcomes</span>
+          <span className="text-slate-600">Clarification <strong className="ml-1 text-slate-800">{clarification}</strong></span>
+          <span className="text-slate-600">Approved <strong className="ml-1 text-slate-800">{approved}</strong></span>
+          <span className="text-slate-600">Rejected <strong className="ml-1 text-slate-800">{rejected}</strong></span>
+          <span className="text-slate-600">Average risk <strong className="ml-1 text-slate-800">{avgRisk}/100</strong></span>
+        </div>
 
         <Card>
           <CardHeader><CardTitle>Jurisdiction Claims</CardTitle><span className="text-xs text-slate-500">{filtered.length} matching · {total} total</span></CardHeader>

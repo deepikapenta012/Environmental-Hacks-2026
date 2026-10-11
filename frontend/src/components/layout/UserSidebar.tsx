@@ -21,8 +21,8 @@ export function UserSidebar() {
   const nav = isRecycler ? RECYCLER_NAV : ORGANIZATION_NAV;
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 flex w-60 flex-col bg-slate-900 border-r border-slate-800">
-      <div className="flex h-16 shrink-0 items-center gap-2.5 px-5 border-b border-slate-800">
+    <aside className="fixed inset-x-0 top-0 z-40 flex h-14 w-full flex-row border-b border-slate-800 bg-slate-900 md:inset-y-0 md:right-auto md:h-auto md:w-60 md:flex-col md:border-b-0 md:border-r">
+      <div className="flex h-14 shrink-0 items-center gap-2 px-3 md:h-16 md:gap-2.5 md:px-5 md:border-b md:border-slate-800">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-600">
           <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.75" width="18" height="18" aria-hidden="true">
             <path d="M12 2L3 7v10l9 5 9-5V7L12 2z" />
@@ -31,11 +31,11 @@ export function UserSidebar() {
         </div>
         <div>
           <p className="text-sm font-bold text-white leading-tight">ChainGuard</p>
-          <p className="text-[10px] text-slate-400 uppercase tracking-wider">{isRecycler ? 'Recycler Portal' : 'Factory Coordinator Portal'}</p>
+          <p className="hidden text-[10px] text-slate-400 uppercase tracking-wider md:block">{isRecycler ? 'Recycler Portal' : 'Factory Coordinator Portal'}</p>
         </div>
       </div>
 
-      <nav className="flex flex-col flex-1 gap-0.5 p-3 overflow-y-auto" aria-label={isRecycler ? 'Recycler navigation' : 'Factory Coordinator navigation'}>
+      <nav className="flex min-w-0 flex-1 flex-row items-center gap-1 overflow-x-auto px-1 md:flex-col md:items-stretch md:gap-0.5 md:overflow-x-visible md:overflow-y-auto md:p-3" aria-label={isRecycler ? 'Recycler navigation' : 'Factory Coordinator navigation'}>
         {nav.map(({ to, icon: Icon, label, end }) => (
           <NavLink
             key={to}
@@ -43,7 +43,7 @@ export function UserSidebar() {
             end={end}
             className={({ isActive }) =>
               cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                'flex shrink-0 items-center gap-2 rounded-lg px-2 py-2 text-xs font-medium transition-colors md:gap-3 md:px-3 md:py-2.5 md:text-sm',
                 isActive ? 'bg-teal-600/15 text-teal-400' : 'text-slate-400 hover:bg-slate-800 hover:text-white'
               )
             }
@@ -59,17 +59,18 @@ export function UserSidebar() {
         ))}
       </nav>
 
-      <div className="border-t border-slate-800 p-3 space-y-0.5">
-        <div className="px-3 py-2 rounded-lg bg-slate-800 mb-1">
+      <div className="flex shrink-0 items-center border-l border-slate-800 px-1 md:block md:border-l-0 md:border-t md:p-3 md:space-y-0.5">
+        <div className="hidden px-3 py-2 rounded-lg bg-slate-800 mb-1 md:block">
           <p className="text-xs font-medium text-white truncate">{user?.name}</p>
           <p className="text-[10px] text-slate-400 truncate">{user?.organisation}</p>
         </div>
         <button
           onClick={() => { logout(); navigate('/'); }}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+          aria-label="Sign out"
+          className="flex items-center gap-2 rounded-lg px-2 py-2 text-xs font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors md:w-full md:gap-3 md:px-3 md:text-sm"
         >
           <LogOut className="h-4 w-4" aria-hidden="true" />
-          Sign out
+          <span className="hidden md:inline">Sign out</span>
         </button>
       </div>
     </aside>

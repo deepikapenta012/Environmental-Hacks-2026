@@ -35,8 +35,25 @@ export function MyClaimsPage() {
             <Link to="/user/submit"><Button>Submit a Claim</Button></Link>
           </div>
         ) : (
-          <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
-            <table className="w-full text-sm">
+          <>
+          <div className="space-y-3 md:hidden">
+            {claims.map(claim => {
+              const sc = claimStatusConfig(claim.status);
+              const vr = claim.verification_result;
+              return <Link key={claim.id} to={`/user/claims/${claim.id}`} className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-colors hover:border-teal-300">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0"><p className="font-mono text-xs font-semibold text-slate-700">{claim.reference_number}</p><p className="mt-1 truncate text-xs text-slate-500">{claim.waste_category}</p></div>
+                  <Badge className={`${sc.bg} ${sc.text}`}>{sc.label}</Badge>
+                </div>
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
+                  <span>{formatWeight(claim.mass_balance.declared_input_kg)} · {formatDate(claim.submitted_at)}</span>
+                  {vr && <RiskScore score={vr.risk_score} level={vr.risk_level} size="sm" />}
+                </div>
+              </Link>;
+            })}
+          </div>
+          <div className="hidden overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm md:block">
+          <table className="w-full min-w-[760px] text-sm">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50">
                   <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500">Reference</th>
@@ -89,8 +106,9 @@ export function MyClaimsPage() {
                   );
                 })}
               </tbody>
-            </table>
+          </table>
           </div>
+          </>
         )}
       </div>
       <Footer />

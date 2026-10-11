@@ -35,13 +35,13 @@ export function GovAllClaimsPage() {
     <div className="flex flex-col min-h-full">
       <TopBar title="All Claims" subtitle="Every claim submitted to the platform" />
       <div className="flex-1 p-6 space-y-4 animate-fade-in">
-        <nav className="flex gap-1 rounded-lg border border-slate-200 bg-white p-1 w-fit" aria-label="Filter by status">
+        <nav className="flex w-full gap-1 overflow-x-auto rounded-lg border border-slate-200 bg-white p-1 sm:w-fit" aria-label="Filter by status">
           {STATUS_FILTERS.map(f => (
             <button
               key={f.value}
               onClick={() => setFilter(f.value)}
               aria-pressed={filter === f.value}
-              className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+              className={`shrink-0 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                 filter === f.value ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-slate-100'
               }`}
             >
