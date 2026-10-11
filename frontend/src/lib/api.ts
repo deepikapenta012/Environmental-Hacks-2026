@@ -1,11 +1,18 @@
 /**
  * API client — all claim operations go through the FastAPI backend.
  *
- * Uses the Vite dev-server proxy: /api/* → http://localhost:8000/api/*
+ * Local development uses the Vite dev-server proxy. Production builds can set
+ * VITE_API_BASE_URL to the deployed API origin (without an /api suffix).
  */
 
 import type { EvidenceFile, EvidenceVersionHistory, RecyclingClaim, ApiResponse } from '@/types';
 import { clearStoredCredentials, getAccessToken, type AccountRole, type AuthUser, type Persona } from '@/lib/auth';
+
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
+
+function apiUrl(path: string): string {
+  return `${API_BASE_URL}${path}`;
+}
 
 export interface LoginResponse {
   access_token: string;
@@ -120,7 +127,7 @@ async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
   if (token && !url.endsWith('/auth/login') && !headers.has('Authorization')) {
     headers.set('Authorization', `Bearer ${token}`);
   }
-  const res = await fetch(url, { ...options, headers });
+  const res = await fetch(apiUrl(url), { ...options, headers });
   if (!res.ok) {
     const payload = await res.json().catch(() => null) as { detail?: unknown } | null;
     const detail = payload?.detail;
@@ -162,7 +169,7 @@ export async function openEvidenceFile(claimId: string, evidenceId: string): Pro
   if (!tab) throw new Error('Allow pop-ups to open evidence files');
   const token = getAccessToken();
   try {
-    const response = await fetch(`/api/v1/claims/${claimId}/evidence/${evidenceId}/file`, {
+    const response = await fetch(apiUrl(`/api/v1/claims/${claimId}/evidence/${evidenceId}/file`), {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     if (!response.ok) throw new Error(`Unable to load evidence (API ${response.status})`);
@@ -321,7 +328,7 @@ export async function archiveClaimEvidence(
 
 export async function downloadEvidenceFile(claimId: string, evidenceId: string): Promise<Blob> {
   const token = getAccessToken();
-  const response = await fetch(`/api/v1/claims/${claimId}/evidence/${evidenceId}/file`, {
+  const response = await fetch(apiUrl(`/api/v1/claims/${claimId}/evidence/${evidenceId}/file`), {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
   if (!response.ok) throw new Error(`Unable to download evidence (API ${response.status})`);
