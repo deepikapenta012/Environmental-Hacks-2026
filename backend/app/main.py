@@ -27,7 +27,7 @@ from app.auth import hash_password
 from app.models import (User, RecyclerFacility, FacilityMembership,
                         GovernmentJurisdiction, GovernmentJurisdictionAssignment, Claim, AuditEvent)
 from app.services.audit import calculate_event_hash, event_hash_fields, request_correlation_id
-from app.services.telemetry import configure_telemetry
+from app.services.telemetry import configure_telemetry, flush_telemetry
 
 logger = logging.getLogger("chainguard")
 
@@ -78,7 +78,10 @@ async def lifespan(app: FastAPI):
     if telemetry_enabled:
         logger.info("OpenTelemetry instrumentation enabled", extra={"service_name": settings.otel_service_name})
     logger.info("database startup complete")
-    yield
+    try:
+        yield
+    finally:
+        flush_telemetry()
 
 
 def migrate_legacy_audit_history() -> dict[str, int]:

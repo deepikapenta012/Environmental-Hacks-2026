@@ -1,4 +1,5 @@
 from functools import lru_cache
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -48,11 +49,11 @@ class Settings(BaseSettings):
     evidence_s3_kms_key_id: str = ""
     aws_region: str = "ap-south-1"
 
-    # OpenTelemetry exports to an AWS Distro for OpenTelemetry Collector when enabled.
+    # OpenTelemetry emits privacy-filtered traces and request metrics to the local console.
     otel_enabled: bool = False
     otel_service_name: str = "ewaste-chainguard-api"
-    otel_collector_endpoint: str = "http://127.0.0.1:4317"
-    otel_insecure: bool = True
+    otel_trace_sample_rate: float = Field(default=1.0, ge=0.0, le=1.0)
+    otel_metric_export_interval_millis: int = Field(default=10000, ge=1000)
 
     @property
     def cors_origins_list(self) -> list[str]:
