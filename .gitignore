@@ -3,6 +3,7 @@
 .env.*
 !.env.example
 users-credentials*.xlsx
+users-directory*.xlsx
 ~$users-credentials*.xlsx
 
 # Local databases, evidence and runtime files
@@ -22,3 +23,6 @@ backend/tests/.test_scratch/
 frontend/dist/
 frontend/.audit-dist/
 **/.vite/
+
+# Local demo samples
+/sample/

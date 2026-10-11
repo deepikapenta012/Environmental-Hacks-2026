@@ -109,11 +109,13 @@ export function runVerification(claim: RecyclingClaim): VerificationResult {
   });
 
   const risk_score = Math.min(100, Math.max(0, totalScore));
+  const discrepancies = flags.filter((flag) => flag.severity !== 'INFO');
+  const criticalCount = discrepancies.filter((flag) => flag.severity === 'CRITICAL').length;
   let risk_level: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
-  if (risk_score <= 25) risk_level = 'LOW';
-  else if (risk_score <= 50) risk_level = 'MEDIUM';
-  else if (risk_score <= 75) risk_level = 'HIGH';
-  else risk_level = 'CRITICAL';
+  if (criticalCount > 0) risk_level = 'CRITICAL';
+  else if (discrepancies.length === 0) risk_level = 'LOW';
+  else if (discrepancies.length <= 2) risk_level = 'MEDIUM';
+  else risk_level = 'HIGH';
 
   return {
     claim_id: claim.id,

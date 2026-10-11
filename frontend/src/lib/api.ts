@@ -5,7 +5,7 @@
  */
 
 import type { EvidenceFile, EvidenceVersionHistory, RecyclingClaim, ApiResponse } from '@/types';
-import { getAccessToken, type AccountRole, type AuthUser, type Persona } from '@/lib/auth';
+import { clearStoredCredentials, getAccessToken, type AccountRole, type AuthUser, type Persona } from '@/lib/auth';
 
 export interface LoginResponse {
   access_token: string;
@@ -141,7 +141,11 @@ async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
       });
       throw new Error([...new Set(messages)].join(' '));
     }
-    if (typeof detail === 'string' && detail.trim()) throw new Error(detail);
+    if (res.status === 401) {
+      clearStoredCredentials();
+      if (window.location.pathname !== '/') window.location.assign('/');
+    }
+    if (res.status < 500 && typeof detail === 'string' && detail.trim()) throw new Error(detail);
     const fallbacks: Record<number, string> = {
       401: 'Your session has expired. Sign in again and retry.',
       403: 'You do not have permission to complete this action.',
@@ -227,7 +231,14 @@ export async function fetchRecyclerAccounts(): Promise<RecyclerAccount[]> {
 }
 
 export async function fetchAssignedClaims(): Promise<RecyclingClaim[]> {
-  return apiFetch<RecyclingClaim[]>('/api/v1/claims/assigned');
+  const pageSize = 100;
+  const first = await apiFetch<{items: RecyclingClaim[]; pages: number}>('/api/v1/claims/assigned?page=1&page_size=100');
+  const all = [...first.items];
+  for (let page = 2; page <= first.pages; page += 1) {
+    const result = await apiFetch<{items: RecyclingClaim[]}>('/api/v1/claims/assigned?page=' + page + '&page_size=' + pageSize);
+    all.push(...result.items);
+  }
+  return all;
 }
 
 export async function confirmClaimReceipt(id: string, payload: ReceiptPayload): Promise<RecyclingClaim> {

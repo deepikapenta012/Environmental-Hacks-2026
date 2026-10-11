@@ -109,6 +109,9 @@ def test_admin_provisioning_and_legacy_review(monkeypatch):
     assert resolved.status_code == 200
     assert client.get("/api/v1/claims/legacy-claim", headers=admin).status_code == 404
     assert client.get("/api/v1/claims/assigned", headers=worker).json()[0]["id"] == "legacy-claim"
+    assigned_page = client.get("/api/v1/claims/assigned?page=1&page_size=1", headers=worker).json()
+    assert assigned_page["total"] == 1 and assigned_page["page"] == 1
+    assert [claim["id"] for claim in assigned_page["items"]] == ["legacy-claim"]
     assert client.post("/api/v1/admin/legacy/claims/legacy-claim/resolve", headers=admin,
         json={"recycler_facility_id": facility_id, "jurisdiction_id": "area",
               "reason": "Retry after client timeout", "confirm": True}).status_code == 200

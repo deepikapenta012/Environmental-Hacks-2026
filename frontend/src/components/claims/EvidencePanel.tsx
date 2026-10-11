@@ -89,9 +89,88 @@ function requiredLabel(category: Category, due: boolean) {
   return 'Required for this stage';
 }
 
+export function getMissingRequiredEvidence(
+  evidence: EvidenceFile[],
+  receivedAt: string | null | undefined,
+  processingCompletedAt: string | null | undefined,
+) {
+  return CHECKLIST.filter(card => {
+    const category = card.id as Category;
+    const required = category !== 'OTHER_SUPPORTING' && category !== 'RECYCLING_CERTIFICATE';
+    if (!required || !isDue(category, receivedAt ?? null, processingCompletedAt ?? null)) return false;
+    return !evidence.some(item => item.category === category
+      && (item.status === 'ACTIVE' || item.status === 'PENDING_REVIEW' || !item.status));
+  }).map(card => card.title);
+}
+
+function compareExtractedFields(item: EvidenceFile, claim?: RecyclingClaim) {
+  if (!item.extracted_data || !claim) return null;
+  const data = item.extracted_data;
+  const recyclerDoc = item.source === 'RECYCLER';
+  const quantityTarget = item.category === 'RECYCLER_RECEIPT' || (recyclerDoc && item.category === 'PROCESSING_RECOVERY')
+    ? claim.mass_balance.received_input_kg
+    : claim.mass_balance.declared_input_kg;
+  const dateTarget = item.category === 'PROCESSING_RECOVERY'
+    ? claim.processing_date || claim.processing_completed_at
+    : item.category === 'RECYCLER_RECEIPT'
+      ? claim.received_at
+      : claim.collection_date;
+  const material = [claim.waste_category.split(/[—–]/).slice(-1)[0].trim(), ...claim.waste_subcategories].filter(Boolean).join(' ');
+  const expected: Record<string, string | number | null | undefined> = {
+    producer: claim.producer.name,
+    recycler: claim.recycler.name,
+    facility: claim.recycler.name,
+    transporter: undefined,
+    claim_reference: claim.reference_number,
+    quantity_unit: 'kg',
+    material_type: material,
+    vehicle_registration: claim.transport[0]?.vehicle_registration,
+    date: dateTarget,
+    dispatch_date: claim.collection_date,
+    arrival_date: claim.received_at,
+    quantity: quantityTarget,
+    net_weight_kg: quantityTarget,
+    received_quantity_kg: claim.mass_balance.received_input_kg,
+    processing_input_kg: claim.mass_balance.received_input_kg,
+    recovered_quantity_kg: claim.mass_balance.recovered_materials.reduce((sum, value) => sum + value.quantity_kg, 0),
+    residual_quantity_kg: claim.mass_balance.residual_waste_kg,
+  };
+  const quantityFields = new Set(['quantity', 'net_weight_kg', 'received_quantity_kg', 'processing_input_kg', 'recovered_quantity_kg', 'residual_quantity_kg']);
+  const normalizeText = (value: unknown) => String(value ?? '').normalize('NFKD').replace(/[^\p{L}\p{N}]/gu, '').toLocaleLowerCase();
+  return Object.entries(data).filter(([key, value]) => key !== '_provenance' && value !== null && value !== undefined && expected[key] !== undefined)
+    .map(([key, value]) => {
+      const entered = expected[key];
+      let result: 'MATCH' | 'MISMATCH' | 'NOT_ENTERED' = 'NOT_ENTERED';
+      if (entered !== null && entered !== undefined && entered !== '') {
+        const documentValue = key === 'quantity'
+          && String(data.quantity_unit || '').toLowerCase() === 'tonnes'
+          ? Number(value) * 1000
+          : value;
+        if (quantityFields.has(key) && typeof documentValue === 'number' && typeof entered === 'number') {
+          result = Math.abs(documentValue - entered) / Math.max(Math.abs(entered), 1) <= 0.05 ? 'MATCH' : 'MISMATCH';
+        } else if (key.endsWith('date') || key === 'date') {
+          const docDate = Date.parse(String(documentValue));
+          const claimDate = Date.parse(String(entered));
+          result = Number.isFinite(docDate) && Number.isFinite(claimDate)
+            ? Math.abs(docDate - claimDate) <= 24 * 60 * 60 * 1000 ? 'MATCH' : 'MISMATCH'
+            : normalizeText(documentValue) === normalizeText(entered) ? 'MATCH' : 'MISMATCH';
+        } else {
+          const docText = normalizeText(documentValue);
+          const enteredText = normalizeText(entered);
+          result = docText === enteredText || (key === 'material_type' && docText.length > 0 && enteredText.length > 0
+            && (docText.includes(enteredText) || enteredText.includes(docText)))
+            ? 'MATCH'
+            : 'MISMATCH';
+        }
+      }
+      return { key, value, entered, result };
+    });
+}
+
 export function EvidencePanel({
   claimId,
   evidence,
+  claim,
   status,
   receivedAt = null,
   processingCompletedAt = null,
@@ -100,6 +179,7 @@ export function EvidencePanel({
 }: {
   claimId: string;
   evidence: EvidenceFile[];
+  claim?: RecyclingClaim;
   status: ClaimStatus;
   receivedAt?: string | null;
   processingCompletedAt?: string | null;
@@ -364,8 +444,8 @@ export function EvidencePanel({
                         </p>
                       )}
                       {item.verification_checks?.length > 0 && <ul className="mt-2 list-inside list-disc space-y-0.5 text-[10px] text-slate-600">{item.verification_checks.map((check, index) => <li key={`${item.id}-${index}`}>{check}</li>)}</ul>}
-                      {item.extracted_data && <p className="mt-1 break-words text-[10px] text-slate-500">Document fields: {Object.entries(item.extracted_data).filter(([key]) => key !== '_provenance').map(([key, value]) => `${key.replace(/_/g, ' ')}: ${value}`).join(' · ')}</p>}
-                      {item.extraction_provenance && <p className="mt-1 text-[10px] text-slate-500">Field source: {Object.entries(item.extraction_provenance.field_sources).map(([field, source]) => `${field.replace(/_/g, ' ')} (${source === 'UPLOADER_PROVIDED' ? 'provided by uploader' : 'read from PDF text'})`).join(' · ')}</p>}
+                      <p className="mt-1 text-[10px] text-slate-600">Extraction: {item.extraction_status || 'PENDING'}{item.extraction_provenance?.method ? ` · ${item.extraction_provenance.method}` : ''}. Authenticity: not verified.</p>
+                      {item.extracted_data && <div className="mt-2 overflow-x-auto"><p className="mb-1 text-[10px] font-semibold text-slate-600">Document fields compared with claim entry · automatic consistency check only</p><table className="w-full text-left text-[10px]"><thead><tr className="text-slate-500"><th className="pr-3 font-medium">Field</th><th className="pr-3 font-medium">Extracted</th><th className="pr-3 font-medium">Entered in claim</th><th className="font-medium">Check</th></tr></thead><tbody>{Object.entries(item.extracted_data).filter(([key]) => key !== '_provenance').map(([key, value]) => { const source = item.extraction_provenance?.field_sources?.[key]; const details = item.extraction_provenance?.field_details?.[key] || {}; const compared = compareExtractedFields(item, claim)?.find(field => field.key === key); const statusStyle = compared?.result === 'MISMATCH' ? 'text-red-700 bg-red-50' : compared?.result === 'MATCH' ? 'text-emerald-700 bg-emerald-50' : 'text-slate-500 bg-slate-100'; const displayEntered = compared?.entered === null || compared?.entered === undefined || compared?.entered === '' ? 'Not entered / not applicable' : `${String(compared.entered)}${['quantity', 'net_weight_kg', 'received_quantity_kg', 'processing_input_kg', 'recovered_quantity_kg', 'residual_quantity_kg'].includes(key) ? ' kg' : ''}`; const displayExtracted = `${String(value)}${key === 'quantity' && item.extracted_data?.quantity_unit ? ` ${item.extracted_data.quantity_unit}` : ['net_weight_kg', 'received_quantity_kg', 'processing_input_kg', 'recovered_quantity_kg', 'residual_quantity_kg'].includes(key) ? ' kg' : ''}`; return <tr key={key} className="border-t border-slate-200"><td className="pr-3 py-1 capitalize">{key.replace(/_/g, ' ')}</td><td className="pr-3 py-1 break-words">{displayExtracted}<span className="block text-slate-400">{source || 'unknown'}{details.page ? ` · page ${details.page}` : ''}{typeof details.confidence === 'number' ? ` · ${Math.round(details.confidence * 100)}% extraction confidence` : ''}</span></td><td className="pr-3 py-1 break-words">{displayEntered}</td><td className="py-1"><span className={`rounded px-1.5 py-0.5 ${statusStyle}`}>{compared?.result === 'MATCH' ? 'Matches' : compared?.result === 'MISMATCH' ? 'Mismatch' : claim ? 'Not comparable' : 'Claim unavailable'}</span></td></tr>; })}</tbody></table><p className="mt-1 text-[9px] text-slate-500">Quantity tolerance is 5%; dates allow a one-day difference. A match does not verify document authenticity.</p></div>}
 
                       {/* Replace / Archive actions */}
                       {!isSuperseded && !isArchived && party !== 'AUDITOR' && (

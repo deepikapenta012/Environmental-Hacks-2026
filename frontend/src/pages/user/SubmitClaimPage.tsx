@@ -335,6 +335,7 @@ export function SubmitClaimPage() {
             )}
             <EvidencePanel
               claimId={result.id}
+              claim={result}
               evidence={result.evidence}
               status={result.status}
               receivedAt={result.received_at}

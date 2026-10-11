@@ -49,14 +49,23 @@ def event_hash_fields(event) -> dict:
     }
 
 
-def verify_event_chain(events) -> bool:
+def verify_event_chain_diagnostics(events) -> dict:
     previous_hash = ""
     expected_sequence = 1
     for event in events:
-        if event.sequence_no != expected_sequence or event.previous_hash != previous_hash:
-            return False
+        if event.sequence_no != expected_sequence:
+            return {"valid": False, "first_invalid_sequence": event.sequence_no,
+                    "event_id": event.id, "reason": f"Expected sequence {expected_sequence}."}
+        if event.previous_hash != previous_hash:
+            return {"valid": False, "first_invalid_sequence": event.sequence_no,
+                    "event_id": event.id, "reason": "Previous-hash link does not match the preceding event."}
         if calculate_event_hash(event_hash_fields(event)) != event.event_hash:
-            return False
+            return {"valid": False, "first_invalid_sequence": event.sequence_no,
+                    "event_id": event.id, "reason": "Event hash does not match its stored fields."}
         previous_hash = event.event_hash
         expected_sequence += 1
-    return True
+    return {"valid": True, "first_invalid_sequence": None, "event_id": None, "reason": None}
+
+
+def verify_event_chain(events) -> bool:
+    return verify_event_chain_diagnostics(events)["valid"]

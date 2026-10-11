@@ -10,8 +10,9 @@ ChainGuard is a local-first workflow application for recording electronic-waste 
 - SQLite for local development; SQLAlchemy also includes PostgreSQL support.
 - Private local evidence storage with server-generated keys, file validation, hashes, and preserved versions.
 - Deterministic verification rules. A consistency check means fields agree with recorded data; it does not authenticate a document.
-- Uploader-provided values and local text-parser values include provenance. OCR, image classification, graph analysis, ML scoring, GPS tracking, and regulator integrations are unavailable.
+- Local extraction reads embedded text from PDFs and parses conservative labeled fields. Optional offline OCR can be enabled with `EVIDENCE_OCR_ENABLED=true` when Tesseract, `pytesseract`, Pillow, and (for scanned PDFs) `pdf2image` plus Poppler are installed. OCR remains disabled by default. Images are not read while OCR is disabled. Extracted values include source page, line, method, and method-specific confidence where available; these are consistency signals and do not authenticate a document.
 - Administrative workflows and append-only claim/admin audit events with hash-chain verification. A local hash chain does not protect against a privileged database operator who rewrites and rehashes the complete history.
+- Government dashboard totals are computed from all claims visible to the officer's jurisdictions. Dashboard search, status/risk/date/facility/flag filters, sorting, and paging operate on that scoped set; the recycler assigned-claims endpoint also offers bounded server pagination.
 
 ## Requirements and local setup
 
@@ -33,9 +34,10 @@ Useful environment settings (configured in `.env` or the deployment environment)
 | `MAX_REQUEST_BODY_BYTES` | Maximum request body, including chunked bodies. Upload handlers independently enforce configured file size. |
 | `LOGIN_ATTEMPT_LIMIT`, `LOGIN_ATTEMPT_WINDOW_SECONDS` | Process-local failed-login throttle. Multi-worker deployments need a shared rate-limit store or gateway limit. |
 | `EVIDENCE_STORAGE_ROOT`, `EVIDENCE_MAX_FILE_SIZE` | Private local evidence directory and per-file byte limit. |
+| `EVIDENCE_OCR_ENABLED` | Enable optional local Tesseract OCR for image and scanned PDF evidence. Defaults to `false`; no cloud credentials are used. Extraction limits are 30 pages and a 20-second per-page OCR timeout. |
 | `BOOTSTRAP_USERS_JSON`, `BOOTSTRAP_FACILITIES_JSON`, `BOOTSTRAP_MEMBERSHIPS_JSON`, `BOOTSTRAP_JURISDICTIONS_JSON` | Optional trusted server-side local provisioning. Do not commit passwords or real personal data in these values. |
 
-Never commit `.env`, production records, database files, evidence, or credential exports. The generator exports all local accounts configured in `backend/.env` to `users-credentials-updated-with-passwords.xlsx`; the workbook contains plaintext demo passwords and is ignored by Git. Provision accounts through trusted bootstrap configuration. Do not use this export workflow for production credentials. Rotate any credential that was previously exposed, using the authorized account owner or environment operator.
+Never commit `.env`, production records, database files, evidence, or generated account directories. `node generate-users-excel.mjs` creates a local `users-directory.xlsx` containing account names and roles, never passwords. Provision accounts through trusted bootstrap configuration and share credentials through a separate approved channel.
 
 ## Database and migrations
 

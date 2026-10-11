@@ -291,6 +291,12 @@ def _report_legacy_orphans(target_engine) -> None:
         logger.warning("invalid historical references require review", extra={"reference_counts": invalid})
 
 
+MIGRATIONS = (
+    ("0001_legacy_schema_adoption", _apply_schema_0001),
+    ("0002_scoped_claim_list_indexes", _apply_query_indexes_0002),
+)
+
+
 def run_migrations(target_engine=None) -> None:
     """Apply ordered additive migrations; interrupted steps are safe to retry.
 
@@ -303,11 +309,7 @@ def run_migrations(target_engine=None) -> None:
         connection.execute(text("CREATE TABLE IF NOT EXISTS schema_migrations (version VARCHAR(100) PRIMARY KEY, applied_at VARCHAR(40) NOT NULL)"))
         applied = {row[0] for row in connection.execute(text("SELECT version FROM schema_migrations"))}
 
-    migrations = [
-        ("0001_legacy_schema_adoption", _apply_schema_0001),
-        ("0002_scoped_claim_list_indexes", _apply_query_indexes_0002),
-    ]
-    for version, upgrade in migrations:
+    for version, upgrade in MIGRATIONS:
         if version in applied:
             continue
         upgrade(target_engine)

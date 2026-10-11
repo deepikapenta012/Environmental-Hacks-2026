@@ -1,6 +1,6 @@
 // Run with: node generate-users-excel.mjs
-// Exports all configured local demo credentials from backend/.env.
-// Output: users-credentials-updated-with-passwords.xlsx (the existing workbook may be open).
+// Exports a non-sensitive directory of configured local demo accounts.
+// Passwords are deliberately never written to generated files.
 
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
@@ -28,7 +28,6 @@ const rows = users.map((user, index) => ({
   'S.No': index + 1,
   'Display Name': user.display_name,
   'Username': user.username,
-  'Password': user.password,
   'Role': user.role,
   'Organisation': user.organisation,
   'Department': user.department || '—',
@@ -37,9 +36,9 @@ const rows = users.map((user, index) => ({
 const workbook = XLSX.utils.book_new();
 const sheet = XLSX.utils.json_to_sheet(rows);
 sheet['!cols'] = [
-  { wch: 6 }, { wch: 26 }, { wch: 28 }, { wch: 32 },
+  { wch: 6 }, { wch: 26 }, { wch: 28 },
   { wch: 24 }, { wch: 42 }, { wch: 34 },
 ];
 XLSX.utils.book_append_sheet(workbook, sheet, 'User Credentials');
-XLSX.writeFile(workbook, 'users-credentials-updated-with-passwords.xlsx');
-console.log('Local demo credentials workbook generated. Keep this file private.');
+XLSX.writeFile(workbook, 'users-directory.xlsx');
+console.log('Non-sensitive local demo user directory generated.');

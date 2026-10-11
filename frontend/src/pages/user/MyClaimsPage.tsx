@@ -13,16 +13,19 @@ import type { RecyclingClaim } from '@/types';
 export function MyClaimsPage() {
   const [claims, setClaims] = useState<RecyclingClaim[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchClaims().then(r => setClaims(r.data)).finally(() => setLoading(false));
+    fetchClaims().then(r => setClaims(r.data)).catch(() => setError('Could not load your claims. Please try again.')).finally(() => setLoading(false));
   }, []);
 
   return (
     <div className="flex flex-col min-h-full">
       <TopBar title="My Claims" subtitle="All claims you have submitted" />
       <div className="flex-1 p-6 animate-fade-in">
-        {!loading && claims.length === 0 ? (
+        {loading ? <p className="py-16 text-center text-sm text-slate-500">Loading your claims…</p> : error ? (
+          <div role="alert" className="py-16 text-center"><p className="text-sm text-red-700">{error}</p><button className="mt-3 text-sm font-medium text-indigo-600" onClick={() => window.location.reload()}>Retry</button></div>
+        ) : claims.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
             <div className="h-14 w-14 rounded-full bg-slate-100 flex items-center justify-center">
               <FilePlus className="h-6 w-6 text-slate-400" aria-hidden="true" />

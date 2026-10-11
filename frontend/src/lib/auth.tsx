@@ -27,6 +27,11 @@ export function getAccessToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
 
+export function clearStoredCredentials(): void {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
+}
+
 function readStoredUser(): AuthUser | null {
   try {
     const user = localStorage.getItem(USER_KEY);

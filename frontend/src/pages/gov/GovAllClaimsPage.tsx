@@ -23,9 +23,10 @@ export function GovAllClaimsPage() {
   const [claims, setClaims]   = useState<RecyclingClaim[]>([]);
   const [filter, setFilter]   = useState<ClaimStatus | 'ALL'>('ALL');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchClaims().then(r => setClaims(r.data)).finally(() => setLoading(false));
+    fetchClaims().then(r => setClaims(r.data)).catch(() => setError('Could not load claims. Please try again.')).finally(() => setLoading(false));
   }, []);
 
   const visible = filter === 'ALL' ? claims : claims.filter(c => c.status === filter);
@@ -52,6 +53,8 @@ export function GovAllClaimsPage() {
         <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
           {loading ? (
             <p className="text-sm text-slate-400 py-10 text-center">Loading…</p>
+          ) : error ? (
+            <div role="alert" className="py-10 text-center"><p className="text-sm text-red-700">{error}</p><button className="mt-2 text-sm font-medium text-indigo-600" onClick={() => window.location.reload()}>Retry</button></div>
           ) : visible.length === 0 ? (
             <p className="text-sm text-slate-400 py-10 text-center">No claims match this filter.</p>
           ) : (

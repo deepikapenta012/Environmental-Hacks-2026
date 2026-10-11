@@ -69,7 +69,7 @@ export function riskLevelConfig(level: RiskLevel) {
       bar: '#10B981',
     },
     MEDIUM: {
-      label: 'Medium Risk',
+      label: 'Moderate Risk',
       bg: 'bg-amber-50',
       text: 'text-amber-700',
       border: 'border-amber-200',

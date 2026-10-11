@@ -11,9 +11,11 @@ import type { RecyclingClaim } from '@/types';
 
 export function GovAlertsPage() {
   const [flagged, setFlagged] = useState<RecyclingClaim[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchClaims({ status: 'FLAGGED' }).then(r => setFlagged(r.data));
+    fetchClaims({ status: 'FLAGGED' }).then(r => setFlagged(r.data)).catch(() => setError('Could not load alerts. Please try again.')).finally(() => setLoading(false));
   }, []);
 
   const allFlags = flagged.flatMap(c =>
@@ -26,7 +28,9 @@ export function GovAlertsPage() {
     <div className="flex flex-col min-h-full">
       <TopBar title="Alerts" subtitle={`${allFlags.length} active flag${allFlags.length !== 1 ? 's' : ''} across ${flagged.length} claim${flagged.length !== 1 ? 's' : ''}`} />
       <div className="flex-1 p-6 space-y-3 animate-fade-in">
-        {allFlags.length === 0 ? (
+        {loading ? <p className="py-16 text-center text-sm text-slate-500">Loading alerts…</p> : error ? (
+          <div role="alert" className="py-16 text-center"><p className="text-sm text-red-700">{error}</p><button className="mt-3 text-sm font-medium text-indigo-600" onClick={() => window.location.reload()}>Retry</button></div>
+        ) : allFlags.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-sm font-medium text-slate-600">No active alerts</p>
             <p className="text-xs text-slate-400 mt-1">No active findings currently require attention in your jurisdiction.</p>

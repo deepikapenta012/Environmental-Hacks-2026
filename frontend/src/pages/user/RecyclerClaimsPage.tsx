@@ -183,6 +183,7 @@ function AssignedClaimCard({ initialClaim }: { initialClaim: RecyclingClaim }) {
         {error && <p className="flex items-start gap-2 text-xs text-red-700" role="alert"><AlertCircle className="h-4 w-4 shrink-0" />{error}</p>}
         <EvidencePanel
           claimId={claim.id}
+          claim={claim}
           evidence={claim.evidence}
           status={claim.status}
           receivedAt={claim.received_at}

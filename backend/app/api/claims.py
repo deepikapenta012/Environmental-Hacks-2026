@@ -35,7 +35,8 @@ from app.auth import (GOVERNMENT_OFFICER, PRODUCER, RECYCLER_EMPLOYEE,
 from app.models import (AuditEvent, Claim, ClaimReferenceCounter, Evidence, FacilityMembership, MassBalanceAdjustment, RecyclerFacility,
                         GovernmentJurisdiction, GovernmentJurisdictionAssignment, TransportLeg, User,
                         VerificationResult as VRModel)
-from app.services.audit import calculate_event_hash, event_hash_fields, request_correlation_id, verify_event_chain
+from app.services.audit import (calculate_event_hash, event_hash_fields, request_correlation_id,
+                                verify_event_chain, verify_event_chain_diagnostics)
 from app.services.document_extraction import get_document_extractor
 from app.services.geocoding import find_locations
 from app.schemas import (
@@ -461,6 +462,7 @@ def _build_response(claim: Claim) -> dict:
         },
         "waste_category": claim.waste_category,
         "waste_subcategories": claim.waste_subcategories or [],
+        "collection_date": claim.collection_date,
         "transport": transport,
         "mass_balance": {
             "declared_input_kg": claim.declared_weight_kg,
@@ -1024,13 +1026,15 @@ def list_recyclers(
 
 @router.get("/assigned")
 def list_assigned_claims(
+    page: int | None = Query(default=None, ge=1),
+    page_size: int = Query(25, ge=1, le=100),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     """List claims assigned to facilities with verified employee membership."""
     if current_user.role != RECYCLER_EMPLOYEE:
         raise HTTPException(status_code=403, detail="Recycler employee role required")
-    claims = (
+    query = (
         db.query(Claim)
         .options(
             joinedload(Claim.transport_legs),
@@ -1038,9 +1042,15 @@ def list_assigned_claims(
             joinedload(Claim.verification_result),
         )
         .filter(_scope_filter(db, current_user))
-        .order_by(Claim.submitted_at.desc())
-        .all()
+        .order_by(Claim.submitted_at.desc(), Claim.id.asc())
     )
+    if page is not None:
+        total = query.order_by(None).count()
+        claims = query.offset((page - 1) * page_size).limit(page_size).all()
+        return {"items": [_build_response(claim) for claim in claims], "total": total,
+                "page": page, "page_size": page_size,
+                "pages": (total + page_size - 1) // page_size}
+    claims = query.all()
     return [_build_response(claim) for claim in claims]
 
 
@@ -1113,8 +1123,9 @@ def get_claim_audit_history(
 ):
     claim = _load_claim(claim_id, db, current_user)
     events = list(claim.audit_events)
+    integrity = verify_event_chain_diagnostics(events)
     return {"claim_id": claim.id, "events": [_event_response(event) for event in events],
-            "chain_valid": verify_event_chain(events)}
+            "chain_valid": integrity["valid"], "integrity": integrity}
 
 
 @router.post("/{claim_id}/flags/{flag_id}/dismiss")
@@ -1608,8 +1619,9 @@ def upload_evidence(
             uploader_role=current_user.role,
             uploader=current_user,
             verification_status=("METADATA_PROVIDED" if "UPLOADER_PROVIDED" in (extracted_data or {}).get("_provenance", {}).get("field_sources", {}).values()
+                                 else "PENDING_HUMAN_REVIEW" if (extracted_data or {}).get("_provenance", {}).get("extraction_status") in {"FAILED", "MANUAL_REVIEW"}
                                  else "EXTRACTED_UNVERIFIED" if extracted_data else "PENDING_HUMAN_REVIEW"),
-            extraction_status="COMPLETED" if extracted_data else "PENDING",
+            extraction_status=((extracted_data or {}).get("_provenance", {}).get("extraction_status") or "COMPLETED") if extracted_data else "PENDING",
             extracted_data=extracted_data,
             extraction_provenance=(extracted_data or {}).get("_provenance"),
             status="ACTIVE",
@@ -1764,8 +1776,9 @@ def replace_evidence(
             uploader_role=current_user.role,
             uploader=current_user,
             verification_status=("METADATA_PROVIDED" if "UPLOADER_PROVIDED" in (extracted_data or {}).get("_provenance", {}).get("field_sources", {}).values()
+                                 else "PENDING_HUMAN_REVIEW" if (extracted_data or {}).get("_provenance", {}).get("extraction_status") in {"FAILED", "MANUAL_REVIEW"}
                                  else "EXTRACTED_UNVERIFIED" if extracted_data else "PENDING_HUMAN_REVIEW"),
-            extraction_status="COMPLETED" if extracted_data else "PENDING",
+            extraction_status=((extracted_data or {}).get("_provenance", {}).get("extraction_status") or "COMPLETED") if extracted_data else "PENDING",
             extracted_data=extracted_data,
             extraction_provenance=(extracted_data or {}).get("_provenance"),
             status=new_status,

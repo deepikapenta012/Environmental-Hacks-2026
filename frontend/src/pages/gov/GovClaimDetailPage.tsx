@@ -13,7 +13,7 @@ import { RiskScore } from '@/components/ui/RiskScore';
 import { VerificationFlags } from '@/components/verification/VerificationFlags';
 import { ExplainabilityBreakdown } from '@/components/verification/ExplainabilityBreakdown';
 import { MassBalancePanel } from '@/components/verification/MassBalancePanel';
-import { EvidencePanel } from '@/components/claims/EvidencePanel';
+import { EvidencePanel, getMissingRequiredEvidence } from '@/components/claims/EvidencePanel';
 import { AuditTimeline, MassBalanceAdjustments } from '@/components/claims/AuditAndAdjustments';
 import { dismissVerificationFlag, fetchClaim, govApproveClaim, govRejectClaim, govRequestClaimClarification, govRecordAuditNote } from '@/lib/api';
 import { claimStatusConfig, formatDate, formatWeight } from '@/lib/utils';
@@ -156,12 +156,12 @@ function GovClaimDetailPageContent() {
     }
   };
 
-  const handleClarification = async () => {
-    if (!claim || !clarificationReason.trim()) return;
+  const handleClarification = async (reason = clarificationReason) => {
+    if (!claim || !reason.trim()) return;
     setRequestingClarification(true);
     setActionMsg(null);
     try {
-      const updated = await govRequestClaimClarification(claim.id, clarificationReason.trim());
+      const updated = await govRequestClaimClarification(claim.id, reason.trim());
       setClaim(updated);
       setActionMsg({ type: 'success', text: 'Clarification requested and recorded in the audit history.' });
       setClarificationReason('');
@@ -223,6 +223,8 @@ function GovClaimDetailPageContent() {
   const isPending  = claim.status === 'PENDING' || claim.status === 'FLAGGED';
   const isVerified = claim.status === 'APPROVED' || claim.status === 'VERIFIED';
   const isRejected = claim.status === 'REJECTED';
+  const missingDocuments = getMissingRequiredEvidence(claim.evidence, claim.received_at, claim.processing_completed_at);
+  const missingDocumentsRequest = `Please upload the following missing required documents for claim ${claim.reference_number}: ${missingDocuments.join(', ')}.`;
 
   return (
     <>
@@ -270,6 +272,7 @@ function GovClaimDetailPageContent() {
 
           <EvidencePanel
             claimId={claim.id}
+            claim={claim}
             evidence={claim.evidence}
             status={claim.status}
             receivedAt={claim.received_at}
@@ -406,7 +409,12 @@ function GovClaimDetailPageContent() {
                   <div className="flex flex-col items-center gap-3 py-2">
                     <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Risk Score</p>
                     <RiskScore score={vr.risk_score} level={vr.risk_level} size="lg" />
-                    <p className="text-center text-[10px] text-slate-500">Review-priority indicator</p>
+                    <p className="text-center text-[10px] text-slate-500">
+                      {vr.risk_level === 'LOW' ? 'No discrepancies found' :
+                       vr.risk_level === 'MEDIUM' ? 'A few discrepancies; review recommended' :
+                       vr.risk_level === 'HIGH' ? 'Multiple discrepancies; careful review recommended' :
+                       'Critical discrepancy requires review'}
+                    </p>
                     <div className="w-full mt-2 space-y-1.5">
                       {[
                         { label: 'Active findings', value: activeFlags.length },
@@ -450,6 +458,20 @@ function GovClaimDetailPageContent() {
                       <p className="text-xs text-amber-700 font-medium">
                         Awaiting your decision. Review the risk score and flags before approving.
                       </p>
+                    </div>
+                    <div className="rounded-lg border border-amber-200 bg-amber-50/60 p-3">
+                      <p className="text-xs font-semibold text-amber-900">Missing required documents</p>
+                      {missingDocuments.length ? (
+                        <>
+                          <ul className="mt-1 list-disc space-y-0.5 pl-4 text-xs text-amber-800">
+                            {missingDocuments.map(document => <li key={document}>{document}</li>)}
+                          </ul>
+                          <Button variant="secondary" size="sm" className="mt-2 w-full justify-center" loading={requestingClarification}
+                            onClick={() => void handleClarification(missingDocumentsRequest)}>
+                            Request Missing Documents
+                          </Button>
+                        </>
+                      ) : <p className="mt-1 text-xs text-emerald-700">All required documents due at this stage are attached.</p>}
                     </div>
                     <label className="block space-y-1 text-xs font-medium text-slate-600">
                       Request clarification

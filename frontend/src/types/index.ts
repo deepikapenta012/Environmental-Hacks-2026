@@ -31,9 +31,9 @@ export interface EvidenceFile {
   sha256: string;
   size_bytes: number;
   uploaded_at: string;
-  extraction_status: 'PENDING' | 'COMPLETED' | 'FAILED';
+  extraction_status: 'PENDING' | 'COMPLETED' | 'PARTIAL' | 'FAILED';
   extracted_data?: Record<string, string | number | Record<string, string>>;
-  extraction_provenance?: { method: string; field_sources: Record<string, string> } | null;
+  extraction_provenance?: { method: string; extractor_version?: string; page_count?: number; authenticity_status?: string; field_sources: Record<string, string>; field_details?: Record<string, Record<string, unknown>> } | null;
   source: 'PRODUCER' | 'RECYCLER' | 'TRANSPORTER' | 'SYSTEM';
   category: 'COLLECTION_WEIGHT_SLIP' | 'TRANSPORT_CHALLAN' | 'RECYCLER_RECEIPT' | 'PROCESSING_RECOVERY' | 'RECYCLING_CERTIFICATE' | 'OTHER_SUPPORTING';
   uploaded_by?: { id: string; name: string; organisation: string; role: string } | null;
@@ -179,6 +179,7 @@ export interface RecyclingClaim {
   recycler: Organization;
   waste_category: string;
   waste_subcategories: string[];
+  collection_date?: string;
   transport: TransportLeg[];
   mass_balance: MassBalance;
   evidence: EvidenceFile[];

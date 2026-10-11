@@ -692,7 +692,20 @@ def check_document_consistency(
                 [evidence_id], entity_mismatches,
             ))
 
+        provenance = data.get("_provenance") if isinstance(data.get("_provenance"), dict) else {}
         doc_quantity = data.get("quantity")
+        quantity_unit = str(data.get("quantity_unit") or "").casefold()
+        if doc_quantity is not None and quantity_unit not in {"kg", "tonnes"}:
+            flags.append(mismatch_flag(
+                "DOC_QUANTITY_UNIT_REVIEW",
+                f"Evidence {evidence_id} includes a quantity whose unit is missing or ambiguous; manual review is required.",
+                [evidence_id], ["document quantity unit"],
+                actual_values={"document_quantity": float(doc_quantity), "document_quantity_unit": quantity_unit or None},
+                risk=0,
+            ))
+            doc_quantity = None
+        elif quantity_unit == "tonnes" and doc_quantity is not None:
+            doc_quantity = float(doc_quantity) * 1000
         if doc_quantity is not None and claim_quantity > 0:
             doc_quantity = float(doc_quantity)
             difference = doc_quantity - claim_quantity
@@ -758,7 +771,18 @@ def check_document_consistency(
                 left, right = first_data.get(field), second_data.get(field)
                 if left and right and _normalise_match_value(left) != _normalise_match_value(right):
                     conflicts.append(f"{field} differs ('{left}' vs '{right}')")
-            left_qty, right_qty = first_data.get("quantity"), second_data.get("quantity")
+            left_qty = first_data.get("quantity")
+            right_qty = second_data.get("quantity")
+            left_unit = str(first_data.get("quantity_unit") or "").casefold()
+            right_unit = str(second_data.get("quantity_unit") or "").casefold()
+            if left_unit not in {"kg", "tonnes"}:
+                left_qty = None
+            elif left_unit == "tonnes":
+                left_qty = float(left_qty) * 1000
+            if right_unit not in {"kg", "tonnes"}:
+                right_qty = None
+            elif right_unit == "tonnes":
+                right_qty = float(right_qty) * 1000
             quantity_difference = None
             quantity_variance = None
             if left_qty is not None and right_qty is not None:
@@ -949,12 +973,13 @@ def check_evidence_replacements(
 def score_flags(flags: list[Flag], *, weights: dict[str, int] | None = None,
                 group_caps: dict[str, int] | None = None,
                 bands: tuple[int, int, int] | None = None) -> tuple[int, str, list[int]]:
-    """Return a bounded 0–100 prioritization score and effective per-flag points.
+    """Return a bounded weighted score, discrepancy-count label, and per-flag points.
 
     Contributions from rules in the same catalog group are capped to limit
     inflation from correlated observations (for example, related mass-balance
     checks). Unknown/test rules retain their declared contribution independently.
-    The score is not a probability and is never a disposition decision.
+    The score is not a probability and is never a disposition decision. The label
+    is based on active warning/critical discrepancy count, not score thresholds.
     """
     from app.config import get_settings
 
@@ -993,18 +1018,18 @@ def score_flags(flags: list[Flag], *, weights: dict[str, int] | None = None,
         contributions.append(applied)
 
     score = min(100, sum(contributions))
-    low_max, medium_max, high_max = bands
-    low_max = min(99, max(0, int(low_max)))
-    medium_max = min(99, max(low_max, int(medium_max)))
-    high_max = min(100, max(medium_max, int(high_max)))
-    if score <= low_max:
-        level = "LOW"
-    elif score <= medium_max:
-        level = "MEDIUM"
-    elif score <= high_max:
-        level = "HIGH"
-    else:
+    # Risk labels describe the number and severity of actual discrepancies.
+    # Informational completeness reminders do not count as discrepancies.
+    discrepancies = [flag for flag in flags if flag.severity != "INFO"]
+    critical_count = sum(flag.severity == "CRITICAL" for flag in discrepancies)
+    if critical_count:
         level = "CRITICAL"
+    elif len(discrepancies) == 0:
+        level = "LOW"
+    elif len(discrepancies) <= 2:
+        level = "MEDIUM"
+    else:
+        level = "HIGH"
     return score, level, contributions
 
 

@@ -39,9 +39,9 @@ Document fields may originate from uploader-entered structured metadata or local
 1. Start with each active flag's base contribution, or its rule-specific configured weight.
 2. Sum contributions within the rule's catalog group, stopping at that group's configured cap. Defaults: mass balance 30, transport 30, document consistency 30, evidence integrity 30, duplicate 35, completeness 0. Uncatalogued rules get their own group and remain visible for catalog review.
 3. Sum capped group contributions and clamp the final score to 0–100.
-4. Default bands: 0–25 Low, 26–50 Medium, 51–75 High, 76–100 Critical.
+4. Assign the review label from active discrepancy count: zero warning/critical findings is Low; one or two warnings is Moderate; three or more warnings is High; any critical finding is Critical. Informational completeness reminders are excluded. The numeric score remains a separate weighted review-priority total.
 
-Severity remains a per-finding description; configured points and the score band are separate values. Informational absence findings contribute zero. No probabilistic confidence is generated. The score does not itself change claim approval/rejection status.
+Informational absence findings contribute zero. No probabilistic confidence is generated. Neither the score nor label changes claim approval/rejection status.
 
 ## Identity, lifecycle, and history
 

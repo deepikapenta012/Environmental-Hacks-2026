@@ -64,6 +64,7 @@ export function UserClaimDetailPage() {
 
         <EvidencePanel
           claimId={claim.id}
+          claim={claim}
           evidence={claim.evidence}
           status={claim.status}
           receivedAt={claim.received_at}
